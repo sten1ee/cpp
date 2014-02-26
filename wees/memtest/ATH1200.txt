@@ -1,0 +1,140 @@
+
+C:\WINNT\Temp>memt 4 
+4  Bytes, 268435456 laps
+read  567M/s
+write 568M/s
+
+C:\WINNT\Temp>memt 8 
+8  Bytes, 134217728 laps
+read  695M/s
+write 817M/s
+
+C:\WINNT\Temp>memt 16 
+16  Bytes, 67108864 laps
+read  964M/s
+write 1217M/s
+
+C:\WINNT\Temp>memt 32 
+32  Bytes, 33554432 laps
+read  1175M/s
+write 1597M/s
+
+C:\WINNT\Temp>memt 64 
+64  Bytes, 16777216 laps
+read  1053M/s
+write 1460M/s
+
+C:\WINNT\Temp>memt 128 
+128  Bytes, 8388608 laps
+read  1262M/s
+write 1762M/s
+
+C:\WINNT\Temp>memt 256 
+256  Bytes, 4194304 laps
+read  1363M/s
+write 2007M/s
+
+C:\WINNT\Temp>memt 512 
+512  Bytes, 2097152 laps
+read  1460M/s
+write 2085M/s
+
+C:\WINNT\Temp>memt 1k 
+1 KBytes, 1048576 laps
+read  1381M/s
+write 2221M/s
+
+C:\WINNT\Temp>memt 2k 
+2 KBytes, 524288 laps
+read  1503M/s
+write 2270M/s
+
+C:\WINNT\Temp>memt 4k 
+4 KBytes, 262144 laps
+read  1503M/s
+write 2275M/s
+
+C:\WINNT\Temp>memt 8k 
+8 KBytes, 131072 laps
+read  1503M/s
+write 2321M/s
+
+C:\WINNT\Temp>memt 16k 
+16 KBytes, 65536 laps
+read  1481M/s
+write 2275M/s
+
+C:\WINNT\Temp>memt 32k 
+32 KBytes, 32768 laps
+read  1503M/s
+write 2321M/s
+
+C:\WINNT\Temp>memt 64k 
+64 KBytes, 16384 laps
+read  1526M/s
+write 2270M/s
+
+C:\WINNT\Temp>memt 128k 
+128 KBytes, 8192 laps
+read  1526M/s
+write 2133M/s
+
+C:\WINNT\Temp>memt 256k 
+256 KBytes, 4096 laps
+read  1503M/s
+write 2043M/s
+
+C:\WINNT\Temp>memt 288k 
+288 KBytes, 3640 laps
+read  1503M/s
+write 2043M/s
+
+C:\WINNT\Temp>memt 314k 
+314 KBytes, 3339 laps
+read  762M/s
+write 938M/s
+
+C:\WINNT\Temp>memt 315k 
+315 KBytes, 3328 laps
+read  725M/s
+write 888M/s
+
+C:\WINNT\Temp>memt 316k 
+316 KBytes, 3318 laps
+read  720M/s
+write 873M/s
+
+C:\WINNT\Temp>memt 317k 
+317 KBytes, 3307 laps
+read  681M/s
+write 811M/s
+
+C:\WINNT\Temp>memt 318k 
+318 KBytes, 3297 laps
+read  720M/s
+write 858M/s
+
+C:\WINNT\Temp>memt 319k 
+319 KBytes, 3287 laps
+read  695M/s
+write 838M/s
+
+C:\WINNT\Temp>memt 320k 
+320 KBytes, 3276 laps
+read  685M/s
+write 805M/s
+
+C:\WINNT\Temp>memt 324k 
+324 KBytes, 3236 laps
+read  615M/s
+write 710M/s
+
+C:\WINNT\Temp>memt 512k 
+512 KBytes, 2048 laps
+read  357M/s
+write 367M/s
+
+C:\WINNT\Temp>memt 1m 
+1 MBytes, 1024 laps
+read  356M/s
+write 362M/s

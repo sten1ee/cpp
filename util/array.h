@@ -1,0 +1,212 @@
+#ifndef UTIL_ARRAY_H
+#define UTIL_ARRAY_H
+
+#include <stdlib.h>
+
+#ifndef UTIL_ASSERT_H
+#	include "util/assert.h"
+#endif
+
+
+template <class DATA>
+struct array_traits
+{
+  typedef       DATA  Data;
+  typedef const DATA& DataIn;
+
+  enum { initial_capacity = 32 };
+
+  static int new_capacity(int old_capacity)
+    {
+      if (old_capacity <= 32)
+        return old_capacity + 32;
+      if (old_capacity <= 1024)
+        return 2 * old_capacity;
+      return old_capacity + 1024;
+    }
+};
+
+template <class DATA>
+class array_ref
+{
+  public:
+    typedef array_traits<DATA>           Traits;
+    typedef typename Traits::Data        Data;
+    typedef typename Traits::DataIn      DataIn;
+    typedef          Data*               iterator;
+    typedef    const Data*               const_iterator;
+
+  protected:
+    Data* data;
+
+    struct rep_t {
+      Data* end_storage;
+      Data* end_data;
+      Data  data[1];
+    };
+
+    rep_t*  rep()
+      {
+        return (rep_t*)((char*)data - offsetof(rep_t, data));
+      }
+
+    const rep_t*  rep() const
+      {
+        return (rep_t*)((char*)data - offsetof(rep_t, data));
+      }
+
+    array_ref()
+      {
+      }
+
+  public:
+    array_ref(const array_ref& arr)
+      {
+        data = arr.data;
+      }
+
+    array_ref& operator = (const array_ref& arr)
+      {
+        data = arr.data;
+        return *this;
+      }
+
+    int   size() const
+      {
+        return end() - begin();
+      }
+
+    bool   empty() const
+      {
+        return end() == begin();
+      }
+
+    Data& operator [](int idx)
+      {
+        UTIL_ASSERT(0 <= idx && idx < size());
+        return data[idx];
+      }
+
+    const Data& operator [](int idx) const
+      {
+        UTIL_ASSERT(0 <= idx && idx < size());
+        return data[idx];
+      }
+
+    iterator  begin()
+      {
+        return data;
+      }
+
+    iterator  end()
+      {
+        return rep()->end_data;
+      }
+
+    const_iterator  begin() const
+      {
+        return data;
+      }
+
+    const_iterator  end() const
+      {
+        return rep()->end_data;
+      }
+};
+
+template <class TRAITS>
+class array : public array_ref<TRAITS>
+{
+  protected:
+    static Data*  malloc(int capacity);
+    static Data*  realloc(Data* data, int additional_capacity);
+    static void   free(Data* data);
+
+    array(const array&) {;}
+    void  operator = (const array&) {;}
+
+    int capacity() const
+      {
+        return rep()->end_storage - rep()->data;
+      }
+
+  public:
+    array()
+      {
+        data = malloc(Traits::initial_capacity);
+      }
+
+    array(int capacity)
+      {
+        data = malloc(capacity);
+      }
+
+    array(Data* src, int sz);
+
+   ~array()
+      {
+        free(data);
+      }
+
+    void  push(DataIn d);
+};
+
+template <class TRAITS>
+array<TRAITS>::Data*
+array<TRAITS>::malloc(int capacity)
+{
+  rep_t* rep = (rep_t*)::malloc(sizeof(rep_t) - sizeof(Data)
+                                              + sizeof(Data) * capacity);
+  UTIL_ASSERT(rep);
+  rep->end_storage = rep->data + capacity;
+  rep->end_data    = rep->data;
+  return rep->data;
+}
+
+template <class TRAITS>
+array<TRAITS>::Data*
+array<TRAITS>::realloc(Data* data, int capacity)
+{
+  rep_t* rep = (rep_t*)((char*)data - offsetof(rep_t, data));
+  rep = (rep_t*)::realloc(rep, sizeof(rep_t) - sizeof(Data)
+                                             + sizeof(Data) * capacity);
+  UTIL_ASSERT(rep);
+  rep->end_storage = rep->data + capacity;
+  rep->end_data    = rep->data + (rep->end_data - rep->data);
+  return rep->data;
+}
+
+template <class TRAITS>
+void
+array<TRAITS>::free(Data* data)
+{
+  rep_t* rep = (rep_t*)((char*)data - offsetof(rep_t, data));
+  ::free(rep);
+}
+
+template <class TRAITS>
+array<TRAITS>::array(Data* src, int sz)
+{
+  UTIL_ASSERT(0 <= sz);
+  Data* dst = data = malloc(sz);
+  rep()->end_data = dst + sz;
+  while (0 <= --sz)
+    {
+      *dst++ = *src++;
+    }
+}
+
+template <class TRAITS>
+void
+array<TRAITS>::push(DataIn d)
+{
+  rep_t* rep = this->rep();
+  if (rep->end_storage == rep->end_data)
+    {
+      data = realloc(data, Traits::new_capacity(capacity()));
+      rep = this->rep();
+    }
+  *rep->end_data++ = d;
+}
+
+#endif //util/array.h

@@ -1,0 +1,230 @@
+<html>
+<head>
+<title> class Vector </title>
+</head>
+
+<body>
+<h2 align=center> class Vector <hr width=100%> </h2>
+
+<h3> Inner type definitions </h3>
+<dl>
+  <dt> <code> typedef typename Traits::Data    Data; </code>
+  <dd> The data type of the elements stored in the container.
+  <dt> <code> typedef typename Traits::DataIn  DataIn; </code>
+  <dd> The argument type of some methods like <code>insert</code>.
+       When <code>Data</code> is a small build-in or user defined type
+       that fits in a register, it is convinient to have
+       <code>DataIn</code> same as <code>Data</code>;
+       Otherwise
+       <code>DataIn</code> defined as <code>const Data&</code> is preferable.
+  <dt> <code>enum  copy_tag  { COPY };</code>
+  <dd> see <a href="#cons_copy">making a copy of a vector </a>.
+  <dt> <code>enum  alias_tag { ALIAS };</code>
+  <dd> see <a href="#cons_alias">making an alias of a vector </a>.
+</dl>
+
+<h3> Inner class definitions </h3>
+<dl>
+  <dt> <code>class const_iterator;</code>
+  <dd> Provides navigation and read-only access to the container.
+  <dt> <code>class iterator;</code>
+  <dd> Provides navigation and read-write access to the container.
+</dl>
+
+
+<h3> Copy / Alias method definitions </h3>
+<dl>
+  <dt> <code>void  copy (const vector& v);</code>
+  <dd> Makes a copy of an existing vector. The vector copied is left unaffected.
+       If <code>this</code> vector is shared with others, a new container is
+       created so the aliases are also unaffected by further operations.
+  <dt> <code>void  alias(const vector& v);</code>
+  <dd> Makes an alias of the existing vector. This means that both vector
+       objects refer to the same actual container. Note that there might be
+       many aliases of the same container simultaneously.
+  <dt> <code>void  swap(vector& v);</code>
+  <dd> Swaps the containers of the two vector objects.
+  <dt> <a name="asign"><code>void  assign(const vector& v);</code></a>
+  <dd> Copies/aliases its argument if the macro <code>OPTION_HARD_COPY</code>
+       is/isn't defined.
+</dl>
+
+<h3> Default behavior upon construction </h3>
+<dl>
+  <dt> <code>static  bool default_owns_data();</code>
+  <dd> Shortcut for <code>Traits::default_owns_data();</code>.
+
+  <dt> <code>static  int  default_capacity();</code>
+  <dd> Shortcut for <code>Traits::default_capacity();</code>.
+
+  <dt> <code>static  int  default_capacity_inc();</code>
+  <dd> Shortcut for <code>Traits::default_capacity_inc();</code>
+</dl>
+
+<h3> Constructor definitions </h3>
+<dl>
+  <dt> <code>vector();</code>
+  <dd> Constructs an empty vector with
+       initial capacity <code>default_capacity()</code>,
+       initial capacity increment <code>default_capacity_inc()</code>,
+       initial ownership flag <code>default_owns_data()</code>.
+
+  <dt> <code>vector(bool owns_data);<code>
+  <dd> Same as the above except that the ownership flag is explicitly mentioned.
+
+  <dt> <code>vector(int capacity, int capacity_inc);<code>
+  <dd> Default ownership flag.
+
+  <dt> <a name="cons_copy"><code>vector(const vector& v, copy_tag);</code></a>
+  <dd> Constructs a vector that is a copy of the specified.
+       Note that the second argument is used only to distinguish the
+       argument list from this of the alias constructor (see below).
+
+  <dt> <a name="cons_alias"><code>vector(const vector& v, alias_tag);</code></a>
+  <dd> Constructs a vector that is an alias of the specified.
+       Note that the second argument is used only to distinguish the
+       argument list from this of the copy constructor (see above).
+
+  <dt> <code>vector(const vector& v);</code>
+  <dd> Constructs a vector that is a copy/alias of the specified
+       when the macro <code>OPTION_HARD_COPY</code> is/isn't defined.
+</dl>
+
+<h3> Destructor </h3>
+<dl>
+  <dt> <code>~vector();</code>
+  <dd> If no other aliases of the container are left destroys the data in the
+       container (depending on the data ownership flag) and then destroys the
+       container.
+</dl>
+
+<h3> Assign operator </h3>
+<dl>
+  <dt> <code>vector&  operator = (const vector& v);</code>
+  <dd> Uses the <code><a href="#asign">asign</a>(v)</code>
+       method to perform the asignment and then
+       returns reference to <code>this</code> vector.
+</dl>
+
+<h3> Inspector definitions </h3>
+<dl>
+  <dt> <code>int   size();</code>
+  <dd>
+
+  <dt> <code>bool  empty()    const;</code>
+  <dd>
+
+  <dt> <code>int   capacity() const;</code>
+  <dd>
+
+  <dt> <code>int   capacity_inc()    const;</code>
+  <dd>
+
+  <dt> <code>bool  owns_data()const; </code>
+  <dd>
+</dl>
+
+<h3> Controlling container's behavior </h3>
+<dl>
+  <dt> <code>void  owns_data(bool o);</code>
+  <dd>
+
+  <dt> <code>void  reserve(int n);</code>
+  <dd>
+
+  <dt> <code>void  resize (int n);</code>
+  <dd>
+
+  <dt> <code>void  resize (int n, DataIn value);</code>
+  <dd>
+
+  <dt> <code>void  trim_to_size();</code>
+  <dd>
+
+  <dt> <code>void  set_capacity_inc(int ci);</code>
+  <dd>
+
+  <dt> <code>void  ensure_insert();</code>
+  <dd>
+
+  <dt> <code>void  set_capacity(int new_capacity);</code>
+  <dd>
+</dl>
+
+<h3> Accessing stored elements </h3>
+<dl>
+  <dt> <code>const_iterator  begin() const;</code>
+  <dd>
+
+  <dt> <code>const_iterator  end()   const;</code>
+  <dd>
+
+  <dt> <code>iterator  begin();</code>
+  <dd>
+
+  <dt> <code>iterator  end();</code>
+  <dd>
+
+  <dt> <code>const Data& operator [] (int index) const;</code>
+  <dd>
+
+  <dt> <code>Data& operator [] (int index);</code>
+  <dd>
+
+  <dt> <code>const Data& front() const;</code>
+  <dd>
+
+  <dt> <code>Data& front();</code>
+  <dd>
+
+  <dt> <code>const Data& back() const;</code>
+  <dd>
+
+  <dt> <code>Data& back();</code>
+  <dd>
+
+  <dt> <code>const Data& top() const;</code>
+  <dd>
+
+  <dt> <code>Data& top();</code>
+  <dd>
+</dl>
+
+<h3> Inserting elements </h3>
+<dl>
+  <dt> <code>void insert(iterator pos, DataIn elem);</code>
+  <dd>
+
+  <dt> <code>void insert(iterator position, const_iterator begin, const_iterator end);</code>
+  <dd>
+
+  <dt> <code>void  push(DataIn elem);</code>
+  <dd>
+
+  <dt> <code>void push_back(DataIn elem);</code>
+  <dd>
+</dl>
+
+<h3> Removing elements </h3>
+<dl>
+  <dt> <code>void  erase(iterator pos);</code>
+  <dd>
+
+  <dt> <code>void  erase(iterator begin, iterator end);</code>
+  <dd>
+
+  <dt> <code>Data  pop();</code>
+  <dd>
+
+  <dt> <code>void pop_back();</code>
+  <dd>
+
+  <dt> <code>void flush(bool owns_data);</code>
+  <dd>
+
+  <dt> <code>void flush();</code>
+  <dd>
+</dl>
+
+</body>
+</html>

@@ -1,0 +1,140 @@
+
+C:\cpp\memtest>memt 4 
+4  Bytes, 268435456 laps
+read  668M/s
+write 661M/s
+
+C:\cpp\memtest>memt 8 
+8  Bytes, 134217728 laps
+read  819M/s
+write 964M/s
+
+C:\cpp\memtest>memt 16 
+16  Bytes, 67108864 laps
+read  1110M/s
+write 1424M/s
+
+C:\cpp\memtest>memt 32 
+32  Bytes, 33554432 laps
+read  1311M/s
+write 1822M/s
+
+C:\cpp\memtest>memt 64 
+64  Bytes, 16777216 laps
+read  1309M/s
+write 1681M/s
+
+C:\cpp\memtest>memt 128 
+128  Bytes, 8388608 laps
+read  1523M/s
+write 2048M/s
+
+C:\cpp\memtest>memt 256 
+256  Bytes, 4194304 laps
+read  1638M/s
+write 2343M/s
+
+C:\cpp\memtest>memt 512 
+512  Bytes, 2097152 laps
+read  1723M/s
+write 2426M/s
+
+C:\cpp\memtest>memt 1k 
+1 KBytes, 1048576 laps
+read  1726M/s
+write 2618M/s
+
+C:\cpp\memtest>memt 2k 
+2 KBytes, 524288 laps
+read  1723M/s
+write 2625M/s
+
+C:\cpp\memtest>memt 4k 
+4 KBytes, 262144 laps
+read  1768M/s
+write 2625M/s
+
+C:\cpp\memtest>memt 8k 
+8 KBytes, 131072 laps
+read  1771M/s
+write 2618M/s
+
+C:\cpp\memtest>memt 16k 
+16 KBytes, 65536 laps
+read  1771M/s
+write 2618M/s
+
+C:\cpp\memtest>memt 32k 
+32 KBytes, 32768 laps
+read  1771M/s
+write 2625M/s
+
+C:\cpp\memtest>memt 64k 
+64 KBytes, 16384 laps
+read  1768M/s
+write 2625M/s
+
+C:\cpp\memtest>memt 128k 
+128 KBytes, 8192 laps
+read  1771M/s
+write 2337M/s
+
+C:\cpp\memtest>memt 256k 
+256 KBytes, 4096 laps
+read  1771M/s
+write 2343M/s
+
+C:\cpp\memtest>memt 288k 
+288 KBytes, 3640 laps
+read  1771M/s
+write 2337M/s
+
+C:\cpp\memtest>memt 314k 
+314 KBytes, 3339 laps
+read  1365M/s
+write 1560M/s
+
+C:\cpp\memtest>memt 315k 
+315 KBytes, 3328 laps
+read  1284M/s
+write 1456M/s
+
+C:\cpp\memtest>memt 316k 
+316 KBytes, 3318 laps
+read  1236M/s
+write 1394M/s
+
+C:\cpp\memtest>memt 317k 
+317 KBytes, 3307 laps
+read  1212M/s
+write 1284M/s
+
+C:\cpp\memtest>memt 318k 
+318 KBytes, 3297 laps
+read  993M/s
+write 949M/s
+
+C:\cpp\memtest>memt 319k 
+319 KBytes, 3287 laps
+read  993M/s
+write 923M/s
+
+C:\cpp\memtest>memt 320k 
+320 KBytes, 3276 laps
+read  1007M/s
+write 963M/s
+
+C:\cpp\memtest>memt 324k 
+324 KBytes, 3236 laps
+read  910M/s
+write 861M/s
+
+C:\cpp\memtest>memt 512k 
+512 KBytes, 2048 laps
+read  612M/s
+write 468M/s
+
+C:\cpp\memtest>memt 1m 
+1 MBytes, 1024 laps
+read  606M/s
+write 468M/s

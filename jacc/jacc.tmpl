@@ -1,0 +1,258 @@
+$!default$GRAMMAR_NAME$!$calc$!$
+$!default$PARSER_BASE$!$lr_parser$!$
+$!default$PARSER$!$$GRAMMAR_NAME$_parser$!$
+$!default$SYM_BASE$!$lr_symbol$!$
+$!default$SYM_SUFFIX$!$_sym$!$
+$!default$SYM$!$$GRAMMAR_NAME$$SYM_SUFFIX$$!$
+$!default$SYMTYPE_ENUM$!$symtype_t$!$
+$!default$VALUE_SYM$!$value_$SYM$$!$
+$!default$SPECZ_SYM$!$specz_$SYM$$!$
+$!default$SPECZ_VALUE_SYM$!$specz_$VALUE_SYM$$!$
+$!default$RESULT$!$result$!$
+$!default$CUSTOM_RESULT_INIT$!$; //$!$
+$!default$CUSTOM_TYPE_DOWNCAST$!$static_cast$!$
+$!default$CUSTOM_TYPE_UPCAST$!$$!$
+
+$!default$SYM_VALUE$!$"<$SYM$>"$!$
+$!default$<SYMTYPE>$!$    $!$
+$!default$</SYMTYPE>$!$$!$
+$!default$<SPECZ>$!$$!$
+$!default$</SPECZ>$!$$SYM_SUFFIX$$!$
+$!default$SYM_INLINE_CODE$!$/* SYM_INLINE_CODE */$!$
+$!default$PARSER_INLINE_CODE$!$/* PARSER_INLINE_CODE */$!$
+$!default$PARSER_CODE$!$/* PARSER_CODE */$!$
+$!default$VALUE$!$->value$!$
+
+$!default$SYM_H$!$$SYM$.h$!$
+$!default$PARSER_H$!$$PARSER$.h$!$
+$!default$PARSER_CPP$!$$PARSER$.cpp$!$
+$//!default-macro-body$PARSER_CPP$!$$PARSER$.cpp$!$
+
+$!default$SYM_H_INCLUDES$!$$!$
+$!default$PARSER_H_INCLUDES$!$$!$
+$!default$PARSER_CPP_INCLUDES$!$$!$
+$//!define$<macro-name>$!$<macro-body>$!$
+$//!ifdef$<macro-name>$!$<then-part>$!$<else-part>$!$
+$//!ifdef$PARSER_BASE$!$$!$$!define$PARSER_BASE$!$lr_parser$!$
+
+$!file$$SYM_H$$!$$//
+#ifndef $SYM$_h
+#define $SYM$_h
+
+#include "$SYM_BASE$.h"
+$SYM_H_INCLUDES$
+
+class $SYM$ : public $SYM_BASE$
+{
+  public:
+
+    enum $SYMTYPE_ENUM$
+    {$!render_symtype_enum$
+    };
+
+    $SYM$()
+      {;}
+
+    $SYM$($SYMTYPE_ENUM$ st)
+      : $SYM_BASE$(st)
+      {;}
+
+$!ifndef$SYM_CODE$!$$//
+    virtual ~$SYM$() {;}
+$!$$//
+$!ifdef$SYM_INLINE_CODE$!$$//
+    $SYM_INLINE_CODE$
+$!$$//
+};
+
+template <int ST>
+class $SPECZ_SYM$ : public $SYM$
+{
+  public:
+    $SPECZ_SYM$()
+      : $SYM$(($SYM$::$SYMTYPE_ENUM$)ST)
+      {;}
+};
+
+template <class VALUE_TYPE>
+class $VALUE_SYM$ : public $SYM$
+{
+  public:
+    VALUE_TYPE  value;
+
+    $VALUE_SYM$()
+      {;}
+
+    $VALUE_SYM$(const VALUE_TYPE& v)
+      : value(v)
+      {;}
+
+    $VALUE_SYM$($SYM$::$SYMTYPE_ENUM$ st)
+      : $SYM$(st)
+      {;}
+
+    $VALUE_SYM$($SYM$::$SYMTYPE_ENUM$ st, const VALUE_TYPE& v)
+      : $SYM$(st), value(v)
+      {;}
+};
+
+template <class VALUE_TYPE, int ST>
+class $SPECZ_VALUE_SYM$ : public $VALUE_SYM$<VALUE_TYPE>
+{
+  public:
+    $SPECZ_VALUE_SYM$()
+      : $VALUE_SYM$<VALUE_TYPE>(($SYM$::$SYMTYPE_ENUM$)ST)
+      {;}
+
+    $SPECZ_VALUE_SYM$(const VALUE_TYPE& v)
+      : $VALUE_SYM$<VALUE_TYPE>(($SYM$::$SYMTYPE_ENUM$)ST, v)
+      {;}
+};
+$!render_symtype_defs$
+
+#endif //$SYM$_h
+$//
+$//
+$!file$$PARSER_H$$!$$//
+#ifndef $PARSER$_h
+#define $PARSER$_h
+
+#include "$PARSER_BASE$.h"
+#include "$SYM$.h"
+$PARSER_H_INCLUDES$
+
+class $PARSER$ : public $PARSER_BASE$, public lr_parser::action_executor
+{
+    typedef lr_parser::prod_entry  prod_entry;
+    typedef $DELETE_WORD_TYPE$         del_entry;
+
+  public:
+    virtual short**     action_table();
+    virtual short**     reduce_table();
+    virtual prod_entry* production_table();
+    virtual int         start_state()      { return $START_STATE$; }
+    virtual int         start_production() { return $START_PROD$; }
+    virtual int         EOF_sym()          { return $EOF_SYM$; }
+    virtual int         error_sym()        { return $ERROR_SYM$; }
+    virtual lr_symbol*  do_action(int         _act,
+                                  lr_parser&  _parser,
+                                  lr_symbol** _stack_top);
+
+            del_entry*  delete_table();
+            void        delete_pending_symbols();
+
+    void init()
+      {
+        set_action_executor(this);
+$!ifdef$ERROR_SYNC_SIZE$!$$//
+        set_error_sync_size($ERROR_SYNC_SIZE$);
+$!$$//
+      }
+
+    $PARSER$()
+      {
+        init();
+      }
+
+    $PARSER$(scanner* s)
+      : $PARSER_BASE$(s)
+      {
+        init();
+      }
+
+   ~$PARSER$()
+      {
+        delete_pending_symbols();
+      }
+
+$!ifdef$PARSE_RESULT_TYPE_IS_CUSTOM$!$
+    $PARSE_RESULT_TYPE$* parse()
+      {
+        stack.pop(); // to prevent the custom sym being deleted
+        return $CUSTOM_TYPE_DOWNCAST$<$PARSE_RESULT_TYPE$*>
+                  (static_cast<$SYM$*>($PARSER_BASE$::parse()));
+      }
+$!$$//
+$!ifdef$PARSE_RESULT_TYPE_IS_VALUE$!$
+    $PARSE_RESULT_TYPE$  parse()
+      {
+        typedef $VALUE_SYM$< $PARSE_RESULT_TYPE$ > symtype_t;
+        return static_cast<symtype_t*>($PARSER_BASE$::parse())$VALUE$;
+      }
+$!$$//
+$!ifdef$PARSE_RESULT_TYPE_IS_SYM$!$
+    void  parse()
+      {
+        $PARSER_BASE$::parse();
+      }
+$!$$//
+
+    $PARSER_INLINE_CODE$
+};
+
+#endif //$PARSER$_h
+$//
+$//
+$!file$$PARSER_CPP$$!$$//
+#include "$PARSER$.h"
+$PARSER_CPP_INCLUDES$
+
+short** $PARSER$::action_table()
+{
+$!render_action_table$
+}
+
+short** $PARSER$::reduce_table()
+{
+$!render_reduce_table$
+}
+
+$PARSER$::prod_entry* $PARSER$::production_table()
+{
+$!render_production_table$
+}
+
+$PARSER$::del_entry* $PARSER$::delete_table()
+{
+$!render_delete_table$
+}
+
+void $PARSER$::delete_pending_symbols()
+{
+  /* delete the look ahead symbol */
+  if (cur_token != 0)
+    {
+      delete static_cast<$SYM$*>(cur_token);
+      cur_token = 0;
+    }
+  /* delete the symbols accumulated on the stack */
+  for (int i = stack.size(), j=0; 0 < --i; )
+    delete static_cast<$SYM$*>(stack.top_ptr()[--j]);
+  stack.npop(stack.size());
+}
+
+lr_symbol*
+$PARSER$::do_action(int _act, lr_parser& _parser, lr_symbol** _stack_top)
+{
+$!define$STACK_TOP$!$_stack_top$!$$//
+$//!define$<RESULT>$!$return $!$$//
+$//!define$</RESULT>$!$$!$$//
+$!define$<RESULT>$!$RESULT = $!$$//
+$!define$</RESULT>$!$$!$$//
+  $SYM$* RESULT;
+
+  switch (_act) {
+  $!render_do_action$
+  default:
+    _parser.report_fatal_error("$PARSER$::do_action: Unmatched action number.");
+  }
+  int  top=0;
+  for (unsigned del_word = delete_table()[_act]; del_word != 0; del_word >>= 1) {
+    --top;
+    if (del_word & 1)
+      delete static_cast<$SYM$*>(_stack_top[top]);
+  }
+  return RESULT;
+}
+
+$PARSER_CODE$

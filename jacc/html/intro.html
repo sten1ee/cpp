@@ -1,0 +1,78 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="author"      content="Stanislav Jordanov">
+   <meta name="generator"   content="Mozilla/4.5 [en] (WinNT; I) [Netscape]">
+   <meta name="description" content="Introduces the Jacc C++ Parser Generator">
+   <meta name="keywords"    content="jerk0main, parser generator, compiler">
+
+   <title>The Jacc Parser Generator - Intro</title>
+</head>
+<body>
+<!---------------------------------------------------------------------------------------->
+<hr width="60%">
+<h1 align="center">The Jacc Parser Generator</h1>
+<hr width="60%">
+<br>
+<a href="mailto:jerk0main@yahoo.com">Stanislav Nikolaev Jordanov</a>
+<br>
+<a href="http://www.sirma.bg/">Sirma AI</a>
+<br>
+<em>December 1999</em>
+<!---------------------------------------------------------------------------------------->
+<a name="1"></a><h2>A Brief Historical Note</h2>
+<p>
+I started Jacc as a hobby project. It would be more precise to say: there was this hobby project (started in the middle of 1998) that led to Jacc. Finally my MSc thesis (18 November 1999 at <a href="http://www.fmi.uni-sofia.bg/">Sofia University, faculty of Mathematics and Informatics </a>) was build around Jacc.
+<p> 
+Jacc's user manual (which is part of my thesis) is written in Bulgarian and to my regret it is not 'ported' to English yet. Fortunately the LALR parser generators are popular enough so if you have some experience with tools like Yacc, Bison or Java CUP it won't be difficult to understand most of Jacc. A couple of examples is added (java12 parser and command line calculator - calc) to further clarify the issue.
+<!---------------------------------------------------------------------------------------->
+<a name="2"></a><h2>Jacc White Paper</h2>
+View <a href="preface.html">the preface of my MSc thesis</a>.
+<!---------------------------------------------------------------------------------------->
+<a name="3"></a><h2>Thanks to</h2>
+<ul>
+<li>
+<a href="http://www.cs.princeton.edu/faculty/appel/">Andrew Appel</a> for its (I think) excellent book "Modern Compiler Implementation in Java" which inspired the project.
+<li>
+<a href="http://www.cs.princeton.edu/faculty/appel/modern/java/CUP/">The people who made Java CUP</a> for Jacc's runtime parser is a C++ port of CUP's runtime parser (with some changes (imposed by the language differencies) and a single bugfix in the error recovery code (I believe)). 
+<li>
+<a href="mailto:svetkins@cs.stanford.edu">Svetoslav Tsvetkov (Svetkins)</a> for supplying me with "strategic" literature (like the above mentioned book by Andrew Appel and others). Blagodarq Staro !
+<li>
+Radostina Dontcheva (for her encouragement) and prof. Dimiter Dobrev.
+<li>
+Any of my relatives and friends who suffered from my not-availability during the development but tolerated it. Thanks !
+<li> <a href="http://www.borland.com/">Borland</a> for their outstanding Borland C++ 5.02 IDE (including the spectacular CodeGuard utility).
+<li> <a href="http://www.delorie.com/djgpp/">DJGPP</a> for supplying me with a second "platform" to experiment with and port to.
+</ul>
+<!---------------------------------------------------------------------------------------->
+<a name="4"></a><h2>The name 'J-A-C-C'</h2>
+As one can see (using a simple AltaVista search) the name 'jacc' is quite heavily exploited. And some of these products are compiler-compilers too. Just to name a few:
+<ul>
+<li>
+<a href="http://www.invisiblesoft.com/jacc.html">Invisible Jacc Home Page</a>
+<li>
+<a href="http://www.isg.sfu.ca/~hak/jacc/">Hassan Ait-Kaci's Jacc</a>
+</ul>
+<em>The product introduced on this page is developed independantly from the two above mentioned and any other Jacc-named product. It just shares the same name. In order to resolve naming conflicts the author would like to introduce the product namespace 'jerk0main' so that Jacc's full name should read jerk0main Jacc.</em>
+<!---------------------------------------------------------------------------------------->
+<a name="5"></a><h2>Dedication</h2>
+For Joanna.
+<br>
+<br>
+<!---------------------------------------------------------------------------------------->
+<a name="6"></a><h2>Availability</h2>
+Currently Jacc is available as a single source and win32 binaries distribution: <a href="jacc.zip">jacc.zip</a>
+<!---------------------------------------------------------------------------------------->
+<a name="7"></a><h4>Jacc Parser Generator Copyright Notice, License, and Disclaimer</h4>
+Copyright 1998-1999 by Stanislav Jordanov
+<br>
+Permission to use, copy, modify, and distribute this software and its documentation for any purpose and without fee is hereby granted, provided that the above copyright notice appear in all copies and that both the copyright notice and this permission notice and warranty disclaimer appear in supporting documentation, and that the names of the authors or their employers not be used in advertising or publicity pertaining to distribution of the software without specific, written prior permission. 
+<br>
+The author and his employers disclaim all warranties with regard to this software, including all implied warranties of merchantability and fitness. In no event shall the authors or their employers be liable for any special, indirect or consequential damages or any damages whatsoever resulting from loss of use, data or profits, whether in an action of contract, negligence or other tortious action, arising out of or in connection with the use or performance of this software. 
+<br>
+<p align="center">
+<a href="jacc.html">[index]</a>
+
+</body>
+</html>

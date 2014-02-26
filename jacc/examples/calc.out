@@ -1,0 +1,518 @@
+
+------------------------------------------------------------
+  Grammar
+------------------------------------------------------------
+Terminals are:
+
+    error   
+    $       
+    PLUS    
+    MINUS   
+    MUL     
+    DIV     
+    REM     
+    NOT     
+    EQ      
+    LESS    
+    GRTR    
+    QMARK   
+    COLON   
+    LPAREN  
+    RPAREN  
+    SEMI    
+    NUM     
+Non-terminals are:
+
+    S'       FIRST  {error $ MINUS NOT LPAREN NUM}
+    exp      FIRST  {MINUS NOT LPAREN NUM}
+    session  FIRST* {error MINUS NOT LPAREN NUM}
+    @1       FIRST* {}
+    @2       FIRST* {}
+Productions are:
+
+      0: S'       ->  session $
+
+      1: @1       -> 
+
+      2: session  ->  exp @1 SEMI session
+
+      3: @2       -> 
+
+      4: session  ->  error @2 SEMI session
+      5: session  -> 
+
+      6: exp      ->  NUM
+      7: exp      ->  NOT exp
+      8: exp      ->  MINUS exp
+      9: exp      ->  exp MUL exp
+     10: exp      ->  exp DIV exp
+     11: exp      ->  exp REM exp
+     12: exp      ->  exp PLUS exp
+     13: exp      ->  exp MINUS exp
+     14: exp      ->  exp EQ exp
+     15: exp      ->  exp LESS exp
+     16: exp      ->  exp GRTR exp
+     17: exp      ->  LPAREN exp RPAREN
+     18: exp      ->  exp QMARK exp COLON exp
+------------------------------------------------------------
+  LALR  table
+------------------------------------------------------------
+99 conflicts found :
+
+------------------------------------------------------------
+State 0
+    S'       -> .session $ 
+Actions:
+    error       shift and goto 1
+    $           reduce by rule 5
+    MINUS       shift and goto 2
+    NOT         shift and goto 3
+    LPAREN      shift and goto 4
+    NUM         shift and goto 5
+    exp                   goto 6
+    session               goto 7
+------------------------------------------------------------
+State 1
+    session  ->  error.@2 SEMI session 
+Actions:
+    SEMI        reduce by rule 3
+    @2                    goto 8
+------------------------------------------------------------
+State 2
+    exp      ->  MINUS.exp 
+Actions:
+    MINUS       shift and goto 2
+    NOT         shift and goto 3
+    LPAREN      shift and goto 4
+    NUM         shift and goto 5
+    exp                   goto 9
+------------------------------------------------------------
+State 3
+    exp      ->  NOT.exp 
+Actions:
+    MINUS       shift and goto 2
+    NOT         shift and goto 3
+    LPAREN      shift and goto 4
+    NUM         shift and goto 5
+    exp                   goto 10
+------------------------------------------------------------
+State 4
+    exp      ->  LPAREN.exp RPAREN 
+Actions:
+    MINUS       shift and goto 2
+    NOT         shift and goto 3
+    LPAREN      shift and goto 4
+    NUM         shift and goto 5
+    exp                   goto 11
+------------------------------------------------------------
+State 5
+    exp      ->  NUM.
+Actions:
+    $default    reduce by rule 6
+------------------------------------------------------------
+State 6
+    session  ->  exp.@1 SEMI session 
+    exp      ->  exp.MUL exp 
+    exp      ->  exp.DIV exp 
+    exp      ->  exp.REM exp 
+    exp      ->  exp.PLUS exp 
+    exp      ->  exp.MINUS exp 
+    exp      ->  exp.EQ exp 
+    exp      ->  exp.LESS exp 
+    exp      ->  exp.GRTR exp 
+    exp      ->  exp.QMARK exp COLON exp 
+Actions:
+    PLUS        shift and goto 12
+    MINUS       shift and goto 13
+    MUL         shift and goto 14
+    DIV         shift and goto 15
+    REM         shift and goto 16
+    EQ          shift and goto 17
+    LESS        shift and goto 18
+    GRTR        shift and goto 19
+    QMARK       shift and goto 20
+    SEMI        reduce by rule 1
+    @1                    goto 21
+------------------------------------------------------------
+State 7
+    S'       ->  session.$ 
+Actions:
+    $           accept
+------------------------------------------------------------
+State 8
+    session  ->  error @2.SEMI session 
+Actions:
+    SEMI        shift and goto 22
+------------------------------------------------------------
+State 9
+    exp      ->  MINUS exp.
+    exp      ->  exp.MUL exp 
+    exp      ->  exp.DIV exp 
+    exp      ->  exp.REM exp 
+    exp      ->  exp.PLUS exp 
+    exp      ->  exp.MINUS exp 
+    exp      ->  exp.EQ exp 
+    exp      ->  exp.LESS exp 
+    exp      ->  exp.GRTR exp 
+    exp      ->  exp.QMARK exp COLON exp 
+Actions:
+    $default    reduce by rule 8
+------------------------------------------------------------
+State 10
+    exp      ->  NOT exp.
+    exp      ->  exp.MUL exp 
+    exp      ->  exp.DIV exp 
+    exp      ->  exp.REM exp 
+    exp      ->  exp.PLUS exp 
+    exp      ->  exp.MINUS exp 
+    exp      ->  exp.EQ exp 
+    exp      ->  exp.LESS exp 
+    exp      ->  exp.GRTR exp 
+    exp      ->  exp.QMARK exp COLON exp 
+Actions:
+    $default    reduce by rule 7
+------------------------------------------------------------
+State 11
+    exp      ->  LPAREN exp.RPAREN 
+    exp      ->  exp.MUL exp 
+    exp      ->  exp.DIV exp 
+    exp      ->  exp.REM exp 
+    exp      ->  exp.PLUS exp 
+    exp      ->  exp.MINUS exp 
+    exp      ->  exp.EQ exp 
+    exp      ->  exp.LESS exp 
+    exp      ->  exp.GRTR exp 
+    exp      ->  exp.QMARK exp COLON exp 
+Actions:
+    PLUS        shift and goto 12
+    MINUS       shift and goto 13
+    MUL         shift and goto 14
+    DIV         shift and goto 15
+    REM         shift and goto 16
+    EQ          shift and goto 17
+    LESS        shift and goto 18
+    GRTR        shift and goto 19
+    QMARK       shift and goto 20
+    RPAREN      shift and goto 23
+------------------------------------------------------------
+State 12
+    exp      ->  exp PLUS.exp 
+Actions:
+    MINUS       shift and goto 2
+    NOT         shift and goto 3
+    LPAREN      shift and goto 4
+    NUM         shift and goto 5
+    exp                   goto 24
+------------------------------------------------------------
+State 13
+    exp      ->  exp MINUS.exp 
+Actions:
+    MINUS       shift and goto 2
+    NOT         shift and goto 3
+    LPAREN      shift and goto 4
+    NUM         shift and goto 5
+    exp                   goto 25
+------------------------------------------------------------
+State 14
+    exp      ->  exp MUL.exp 
+Actions:
+    MINUS       shift and goto 2
+    NOT         shift and goto 3
+    LPAREN      shift and goto 4
+    NUM         shift and goto 5
+    exp                   goto 26
+------------------------------------------------------------
+State 15
+    exp      ->  exp DIV.exp 
+Actions:
+    MINUS       shift and goto 2
+    NOT         shift and goto 3
+    LPAREN      shift and goto 4
+    NUM         shift and goto 5
+    exp                   goto 27
+------------------------------------------------------------
+State 16
+    exp      ->  exp REM.exp 
+Actions:
+    MINUS       shift and goto 2
+    NOT         shift and goto 3
+    LPAREN      shift and goto 4
+    NUM         shift and goto 5
+    exp                   goto 28
+------------------------------------------------------------
+State 17
+    exp      ->  exp EQ.exp 
+Actions:
+    MINUS       shift and goto 2
+    NOT         shift and goto 3
+    LPAREN      shift and goto 4
+    NUM         shift and goto 5
+    exp                   goto 29
+------------------------------------------------------------
+State 18
+    exp      ->  exp LESS.exp 
+Actions:
+    MINUS       shift and goto 2
+    NOT         shift and goto 3
+    LPAREN      shift and goto 4
+    NUM         shift and goto 5
+    exp                   goto 30
+------------------------------------------------------------
+State 19
+    exp      ->  exp GRTR.exp 
+Actions:
+    MINUS       shift and goto 2
+    NOT         shift and goto 3
+    LPAREN      shift and goto 4
+    NUM         shift and goto 5
+    exp                   goto 31
+------------------------------------------------------------
+State 20
+    exp      ->  exp QMARK.exp COLON exp 
+Actions:
+    MINUS       shift and goto 2
+    NOT         shift and goto 3
+    LPAREN      shift and goto 4
+    NUM         shift and goto 5
+    exp                   goto 32
+------------------------------------------------------------
+State 21
+    session  ->  exp @1.SEMI session 
+Actions:
+    SEMI        shift and goto 33
+------------------------------------------------------------
+State 22
+    session  ->  error @2 SEMI.session 
+Actions:
+    error       shift and goto 1
+    $           reduce by rule 5
+    MINUS       shift and goto 2
+    NOT         shift and goto 3
+    LPAREN      shift and goto 4
+    NUM         shift and goto 5
+    exp                   goto 6
+    session               goto 34
+------------------------------------------------------------
+State 23
+    exp      ->  LPAREN exp RPAREN.
+Actions:
+    $default    reduce by rule 17
+------------------------------------------------------------
+State 24
+    exp      ->  exp PLUS exp.
+    exp      ->  exp.MUL exp 
+    exp      ->  exp.DIV exp 
+    exp      ->  exp.REM exp 
+    exp      ->  exp.PLUS exp 
+    exp      ->  exp.MINUS exp 
+    exp      ->  exp.EQ exp 
+    exp      ->  exp.LESS exp 
+    exp      ->  exp.GRTR exp 
+    exp      ->  exp.QMARK exp COLON exp 
+Actions:
+    MUL         shift and goto 14
+    DIV         shift and goto 15
+    REM         shift and goto 16
+    $default    reduce by rule 12
+------------------------------------------------------------
+State 25
+    exp      ->  exp MINUS exp.
+    exp      ->  exp.MUL exp 
+    exp      ->  exp.DIV exp 
+    exp      ->  exp.REM exp 
+    exp      ->  exp.PLUS exp 
+    exp      ->  exp.MINUS exp 
+    exp      ->  exp.EQ exp 
+    exp      ->  exp.LESS exp 
+    exp      ->  exp.GRTR exp 
+    exp      ->  exp.QMARK exp COLON exp 
+Actions:
+    MUL         shift and goto 14
+    DIV         shift and goto 15
+    REM         shift and goto 16
+    $default    reduce by rule 13
+------------------------------------------------------------
+State 26
+    exp      ->  exp MUL exp.
+    exp      ->  exp.MUL exp 
+    exp      ->  exp.DIV exp 
+    exp      ->  exp.REM exp 
+    exp      ->  exp.PLUS exp 
+    exp      ->  exp.MINUS exp 
+    exp      ->  exp.EQ exp 
+    exp      ->  exp.LESS exp 
+    exp      ->  exp.GRTR exp 
+    exp      ->  exp.QMARK exp COLON exp 
+Actions:
+    $default    reduce by rule 9
+------------------------------------------------------------
+State 27
+    exp      ->  exp DIV exp.
+    exp      ->  exp.MUL exp 
+    exp      ->  exp.DIV exp 
+    exp      ->  exp.REM exp 
+    exp      ->  exp.PLUS exp 
+    exp      ->  exp.MINUS exp 
+    exp      ->  exp.EQ exp 
+    exp      ->  exp.LESS exp 
+    exp      ->  exp.GRTR exp 
+    exp      ->  exp.QMARK exp COLON exp 
+Actions:
+    $default    reduce by rule 10
+------------------------------------------------------------
+State 28
+    exp      ->  exp REM exp.
+    exp      ->  exp.MUL exp 
+    exp      ->  exp.DIV exp 
+    exp      ->  exp.REM exp 
+    exp      ->  exp.PLUS exp 
+    exp      ->  exp.MINUS exp 
+    exp      ->  exp.EQ exp 
+    exp      ->  exp.LESS exp 
+    exp      ->  exp.GRTR exp 
+    exp      ->  exp.QMARK exp COLON exp 
+Actions:
+    $default    reduce by rule 11
+------------------------------------------------------------
+State 29
+    exp      ->  exp EQ exp.
+    exp      ->  exp.MUL exp 
+    exp      ->  exp.DIV exp 
+    exp      ->  exp.REM exp 
+    exp      ->  exp.PLUS exp 
+    exp      ->  exp.MINUS exp 
+    exp      ->  exp.EQ exp 
+    exp      ->  exp.LESS exp 
+    exp      ->  exp.GRTR exp 
+    exp      ->  exp.QMARK exp COLON exp 
+Actions:
+    PLUS        shift and goto 12
+    MINUS       shift and goto 13
+    MUL         shift and goto 14
+    DIV         shift and goto 15
+    REM         shift and goto 16
+    EQ          error: nonassoc
+    LESS        error: nonassoc
+    GRTR        error: nonassoc
+    $default    reduce by rule 14
+------------------------------------------------------------
+State 30
+    exp      ->  exp LESS exp.
+    exp      ->  exp.MUL exp 
+    exp      ->  exp.DIV exp 
+    exp      ->  exp.REM exp 
+    exp      ->  exp.PLUS exp 
+    exp      ->  exp.MINUS exp 
+    exp      ->  exp.EQ exp 
+    exp      ->  exp.LESS exp 
+    exp      ->  exp.GRTR exp 
+    exp      ->  exp.QMARK exp COLON exp 
+Actions:
+    PLUS        shift and goto 12
+    MINUS       shift and goto 13
+    MUL         shift and goto 14
+    DIV         shift and goto 15
+    REM         shift and goto 16
+    EQ          error: nonassoc
+    LESS        error: nonassoc
+    GRTR        error: nonassoc
+    $default    reduce by rule 15
+------------------------------------------------------------
+State 31
+    exp      ->  exp GRTR exp.
+    exp      ->  exp.MUL exp 
+    exp      ->  exp.DIV exp 
+    exp      ->  exp.REM exp 
+    exp      ->  exp.PLUS exp 
+    exp      ->  exp.MINUS exp 
+    exp      ->  exp.EQ exp 
+    exp      ->  exp.LESS exp 
+    exp      ->  exp.GRTR exp 
+    exp      ->  exp.QMARK exp COLON exp 
+Actions:
+    PLUS        shift and goto 12
+    MINUS       shift and goto 13
+    MUL         shift and goto 14
+    DIV         shift and goto 15
+    REM         shift and goto 16
+    EQ          error: nonassoc
+    LESS        error: nonassoc
+    GRTR        error: nonassoc
+    $default    reduce by rule 16
+------------------------------------------------------------
+State 32
+    exp      ->  exp QMARK exp.COLON exp 
+    exp      ->  exp.MUL exp 
+    exp      ->  exp.DIV exp 
+    exp      ->  exp.REM exp 
+    exp      ->  exp.PLUS exp 
+    exp      ->  exp.MINUS exp 
+    exp      ->  exp.EQ exp 
+    exp      ->  exp.LESS exp 
+    exp      ->  exp.GRTR exp 
+    exp      ->  exp.QMARK exp COLON exp 
+Actions:
+    PLUS        shift and goto 12
+    MINUS       shift and goto 13
+    MUL         shift and goto 14
+    DIV         shift and goto 15
+    REM         shift and goto 16
+    EQ          shift and goto 17
+    LESS        shift and goto 18
+    GRTR        shift and goto 19
+    QMARK       shift and goto 20
+    COLON       shift and goto 35
+------------------------------------------------------------
+State 33
+    session  ->  exp @1 SEMI.session 
+Actions:
+    error       shift and goto 1
+    $           reduce by rule 5
+    MINUS       shift and goto 2
+    NOT         shift and goto 3
+    LPAREN      shift and goto 4
+    NUM         shift and goto 5
+    exp                   goto 6
+    session               goto 36
+------------------------------------------------------------
+State 34
+    session  ->  error @2 SEMI session.
+Actions:
+    $           reduce by rule 4
+------------------------------------------------------------
+State 35
+    exp      ->  exp QMARK exp COLON.exp 
+Actions:
+    MINUS       shift and goto 2
+    NOT         shift and goto 3
+    LPAREN      shift and goto 4
+    NUM         shift and goto 5
+    exp                   goto 37
+------------------------------------------------------------
+State 36
+    session  ->  exp @1 SEMI session.
+Actions:
+    $           reduce by rule 2
+------------------------------------------------------------
+State 37
+    exp      ->  exp QMARK exp COLON exp.
+    exp      ->  exp.MUL exp 
+    exp      ->  exp.DIV exp 
+    exp      ->  exp.REM exp 
+    exp      ->  exp.PLUS exp 
+    exp      ->  exp.MINUS exp 
+    exp      ->  exp.EQ exp 
+    exp      ->  exp.LESS exp 
+    exp      ->  exp.GRTR exp 
+    exp      ->  exp.QMARK exp COLON exp 
+Actions:
+    PLUS        shift and goto 12
+    MINUS       shift and goto 13
+    MUL         shift and goto 14
+    DIV         shift and goto 15
+    REM         shift and goto 16
+    EQ          shift and goto 17
+    LESS        shift and goto 18
+    GRTR        shift and goto 19
+    QMARK       shift and goto 20
+    $default    reduce by rule 18
