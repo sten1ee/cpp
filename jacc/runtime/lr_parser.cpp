@@ -1,12 +1,18 @@
-#include <stdlib.h>
 #include "lr_parser.h"
 
 #define LENGTH(ARR) ((ARR)[-1])
 
+#ifdef DEBUG_PARSER
+# define DEBUG_LOG(SEQ)   debug_os() << SEQ << '\n'
+#else
+# define DEBUG_LOG(SEQ)   ((void)0)
+#endif
+
+
 void lr_parser::init()
 {
-  _error_os = &cerr;
-  _debug_os = &cerr;
+  _error_os = &std::cerr;
+  _debug_os = &std::cerr;
   _error_sync_size = 3;
 }
 
@@ -19,34 +25,6 @@ lr_parser::lr_parser(scanner* s)
 {
   init();
   set_scanner(s);
-}
-
-lr_parser::stack::stack(int init_size)
-{
-  base = (lr_symbol**)malloc(init_size * sizeof(lr_symbol*));
-  if (base == 0)
-    throw xfatal("Fatal Error: Can't allocate parser stack");
-  end = (top = base) + init_size;
-}
-
-lr_parser::stack::~stack()
-{
-  free(base);
-}
-
-void  lr_parser::stack::grow()
-{
-  int         new_size = 2 * (end - base);
-  lr_symbol** new_base = (lr_symbol**)realloc(base,
-                                              new_size * sizeof(lr_symbol*));
-  if (new_base == 0)
-    throw xfatal("Fatal Error: Parser stack exhausted");
-  if (base != new_base)
-    {
-      top  = new_base + (top - base);
-      end  = new_base + (end - base);
-      base = new_base;
-    }
 }
 
 void lr_parser::report_fatal_error(const char* message, lr_symbol* info)
@@ -182,8 +160,12 @@ lr_symbol* lr_parser::parse()
       /* decode the action -- > 0 encodes shift */
       if (act > 0)
         {
+          act = act - 1;
+
+          DEBUG_LOG("Shift and goto " << act);
+
           /* shift to the encoded state by pushing it on the stack */
-          cur_token->parse_state = act-1;
+          cur_token->parse_state = act;
           stack.push(cur_token);
 
           /* advance to the next Symbol */
@@ -192,7 +174,9 @@ lr_symbol* lr_parser::parse()
       /* if its less than zero, then it encodes a reduce action */
       else if (act < 0)
         {
-          act = (-act)-1;
+          act = (-act) - 1;
+
+          DEBUG_LOG("Reduce by rule " << act);
 
           /* perform the action for the reduce */
           lr_symbol* lhs_sym = do_action(act);
@@ -217,15 +201,19 @@ lr_symbol* lr_parser::parse()
           /* shift to that state */
           lhs_sym->parse_state = act;
           stack.push(lhs_sym);
+
+          DEBUG_LOG("      and goto " << act);
         }
       /* finally if the entry is zero, we have an error */
       else if (act == 0)
         {
+          DEBUG_LOG("Error");
+
           /* call user syntax error reporting routine */
           syntax_error(cur_token);
 
           /* try to error recover */
-          switch (error_recovery(false))
+          switch (error_recovery())
             {
             case ERS_FAIL:
               /* if that fails give up with a fatal syntax error */
@@ -243,23 +231,15 @@ lr_symbol* lr_parser::parse()
 
 }
 
-/***
-lr_parser::ers_t  lr_parser::error_recovery(bool debug)
+lr_parser::ers_t  lr_parser::error_recovery()
 {
-  debug_os() << "# Error recovery is not implemented in this version\n";
-  return ERS_FAIL;
-}
-***/
-
-lr_parser::ers_t  lr_parser::error_recovery(bool debug)
-{
-  if (debug) debug_os() << "# Attempting error recovery\n";
+  DEBUG_LOG("# Attempting error recovery");
 
   /* first pop the stack back into a state that can shift on error and
      do that shift (if that fails, we fail) */
-  if (!find_recovery_config(debug))
+  if (!find_recovery_config())
     {
-      if (debug) debug_os() << "# Error recovery fails\n";
+      DEBUG_LOG("# Error recovery fails");
       return ERS_FAIL;
     }
 
@@ -270,9 +250,9 @@ lr_parser::ers_t  lr_parser::error_recovery(bool debug)
   while (true)
     {
       /* try to parse forward, if it makes it, bail out of loop */
-      if (debug) debug_os() << "# Trying to parse ahead\n";
+      DEBUG_LOG("# Trying to parse ahead");
 
-      if (try_parse_ahead(debug))
+      if (try_parse_ahead())
         {
           break;
         }
@@ -284,25 +264,25 @@ lr_parser::ers_t  lr_parser::error_recovery(bool debug)
       if (lookahead_len <= 0)
         {
           assert(lookahead_len == 0);
-          if (debug) debug_os() << "# Error recovery fails at EOF\n";
+          DEBUG_LOG("# Error recovery fails at EOF");
           return ERS_FAIL;
         }
     }
 
   /* we have consumed to a point where we can parse forward */
-  if (debug) debug_os() << "# Parse-ahead ok, going back to normal parse\n";
+  DEBUG_LOG("# Parse-ahead ok, going back to normal parse");
 
   /* do the real parse (including actions) across the lookahead.
      this call will return either ERS_SUCCESS or ERS_ACCEPT */
-  return parse_lookahead(debug);
+  return parse_lookahead();
 }
 
-bool  lr_parser::find_recovery_config(bool debug)
+bool  lr_parser::find_recovery_config()
 {
   lr_symbol* error_token;
   int act;
 
-  if (debug) debug_os() << "# Finding recovery state on stack\n";
+  DEBUG_LOG("# Finding recovery state on stack");
 
   /* Remember the right-position of the top symbol on the stack */
   //$int right_pos = ((Symbol)stack.peek()).right;
@@ -312,8 +292,9 @@ bool  lr_parser::find_recovery_config(bool debug)
   while (!shift_under_error())
     {
       /* pop the stack */
-      if (debug) debug_os() << "# Pop stack by one, state was # "
-                            << stack.peek()->parse_state << '\n';
+      DEBUG_LOG("# Pop stack by one, state was # "
+                << stack.peek()->parse_state);
+
       //$left_pos = ((Symbol)stack.pop()).left;
       lr_symbol* sym = stack.peek();
       stack.pop();
@@ -321,7 +302,7 @@ bool  lr_parser::find_recovery_config(bool debug)
       /* if we have hit bottom, we fail */
       if (stack.empty())
         {
-          if (debug) debug_os() << "# No recovery state found on stack\n";
+          DEBUG_LOG("# No recovery state found on stack");
           return false;
         }
 
@@ -331,11 +312,9 @@ bool  lr_parser::find_recovery_config(bool debug)
 
   /* state on top of the stack can shift under error, find the shift */
   act = get_action(stack.peek()->parse_state, error_sym());
-  if (debug)
-    {
-      debug_os() << "# Recover state found (#" << stack.peek()->parse_state
-                 << ")\n# Shifting on error to state #" << (act-1) << '\n';
-    }
+
+  DEBUG_LOG("# Recover state found (#" << stack.peek()->parse_state
+            << ")\n# Shifting on error to state #" << (act-1));
 
   /* build and shift a special error Symbol */
   error_token = new lr_symbol(error_sym(), act-1);//$, left_pos, right_pos);
@@ -394,7 +373,7 @@ void  lr_parser::restart_lookahead()
   lookahead_pos = 0;
 }
 
-bool lr_parser::try_parse_ahead(bool debug)
+bool lr_parser::try_parse_ahead()
 {
   /* create a virtual stack from the real parse stack */
   virtual_stack  vstack(stack);
@@ -414,9 +393,9 @@ bool lr_parser::try_parse_ahead(bool debug)
           /* push the new state on the stack */
           vstack.push(act-1);
 
-          if (debug) debug_os() << "# Parse-ahead shifts symbol #"
-                                <<  cur_err_token()->sym
-                                << " into state #" << (act-1) << '\n';
+          DEBUG_LOG("# Parse-ahead shifts symbol #"
+                    <<  cur_err_token()->sym
+                    << " into state #" << (act-1));
 
           /* advance simulated input, if we run off the end, we are done */
           if (!advance_lookahead())
@@ -428,7 +407,7 @@ bool lr_parser::try_parse_ahead(bool debug)
           /* if this is a reduce with the start production we are done */
           if ((-act)-1 == start_production())
             {
-              if (debug) debug_os() << "# Parse-ahead accepts\n";
+              DEBUG_LOG("# Parse-ahead accepts");
               return true;
             }
 
@@ -440,29 +419,27 @@ bool lr_parser::try_parse_ahead(bool debug)
           for (int i = 0; i < rhs_size; i++)
             vstack.pop();
 
-          if (debug) debug_os() << "# Parse-ahead reduces: handle size = "
-                                << rhs_size << " lhs = #" << lhs
-                                << " from state #" << vstack.top() << '\n';
+          DEBUG_LOG("# Parse-ahead reduces: handle size = "
+                    << rhs_size << " lhs = #" << lhs
+                    << " from state #" << vstack.top());
 
           /* look up goto and push it onto the stack */
           vstack.push(get_reduce(vstack.top(), lhs));
-          if (debug) debug_os() << "# Goto state #" << vstack.top() << '\n';
+
+          DEBUG_LOG("# Goto state #" << vstack.top());
         }
     }
 }
 
-lr_parser::ers_t  lr_parser::parse_lookahead(bool debug)
+lr_parser::ers_t  lr_parser::parse_lookahead()
 {
   /* restart the saved input at the beginning */
   lookahead_pos = 0;
 
-  if (debug)
-    {
-      debug_os() << "# Reparsing saved input with actions\n"
-                 << "# Current symbol is #" << cur_err_token()->sym << '\n'
-                 << "# Current state is #"
-                 << stack.peek()->parse_state << '\n';
-    }
+  DEBUG_LOG("# Reparsing saved input with actions"
+            << "# Current symbol is #" << cur_err_token()->sym
+            << "\n# Current state is #"
+            << stack.peek()->parse_state);
 
   /* continue until we accept or have read all lookahead input */
   while (true)
@@ -483,7 +460,7 @@ lr_parser::ers_t  lr_parser::parse_lookahead(bool debug)
           /* advance to the next symbol, if there is none, we are done */
           if (!advance_lookahead())
             {
-              if (debug) debug_os() << "# Completed reparse\n";
+              DEBUG_LOG("# Completed reparse");
 
               /* scan next symbol so we can continue parse */
               // BUGFIX by Chris Harris <ckharris@ucsd.edu>:
@@ -495,8 +472,7 @@ lr_parser::ers_t  lr_parser::parse_lookahead(bool debug)
               return ERS_SUCCESS;
             }
 
-          if (debug) debug_os() << "# Current symbol is #"
-                                << cur_err_token()->sym << '\n';
+          DEBUG_LOG("# Current symbol is #" << cur_err_token()->sym);
         }
       /* if its less than zero, then it encodes a reduce action */
       else if (act < 0)
@@ -525,8 +501,7 @@ lr_parser::ers_t  lr_parser::parse_lookahead(bool debug)
           lhs_sym->parse_state = act;
           stack.push(lhs_sym);
 
-          if (debug) debug_os() << "# Goto state #" << act << '\n';
-
+          DEBUG_LOG("# Goto state #" << act);
         }
       /* finally if the entry is zero, we have an error
       (shouldn't happen here, but...)*/

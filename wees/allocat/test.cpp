@@ -80,12 +80,13 @@ unsigned random(unsigned& ra, unsigned NN)
     return ra % NN;
   }
 
+#if !defined(min)
 inline
 int min(int p, int q)
   {
     return p < q ? p : q;
   }
-
+#endif
   
 struct arg_t
 {

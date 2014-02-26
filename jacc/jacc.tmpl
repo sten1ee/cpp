@@ -235,10 +235,19 @@ lr_symbol*
 $PARSER$::do_action(int _act, lr_parser& _parser, lr_symbol** _stack_top)
 {
 $!define$STACK_TOP$!$_stack_top$!$$//
-$//!define$<RESULT>$!$return $!$$//
-$//!define$</RESULT>$!$$!$$//
-$!define$<RESULT>$!$RESULT = $!$$//
-$!define$</RESULT>$!$$!$$//
+$!ifdef$BEFORE_ACTION$!$$//
+#define RHS_SIZE     (production_tab[_act].rhs_size)
+#define RHS_BEG_IDX  (-RHS_SIZE)
+#define RHS_END_IDX  (0)
+#define RHS_SYM(IDX) static_cast<$SYM$*>($STACK_TOP$[IDX])
+#define LA_SYM       static_cast<$SYM$*>(cur_token)
+    $BEFORE_ACTION$
+#undef RHS_SIZE
+#undef RHS_BEG_IDX
+#undef RHS_END_IDX
+#undef RHS_SYM
+#undef LA_SYM
+$!$$//
   $SYM$* RESULT;
 
   switch (_act) {
@@ -246,11 +255,26 @@ $!define$</RESULT>$!$$!$$//
   default:
     _parser.report_fatal_error("$PARSER$::do_action: Unmatched action number.");
   }
+$!ifdef$AFTER_ACTION$!$
+  do {
+#define RHS_SIZE     (production_tab[_act].rhs_size)
+#define RHS_BEG_IDX  (-RHS_SIZE)
+#define RHS_END_IDX  (0)
+#define RHS_SYM(IDX) static_cast<$SYM$*>($STACK_TOP$[IDX])
+#define LA_SYM       static_cast<$SYM$*>(cur_token)
+    $AFTER_ACTION$
+#undef RHS_SIZE
+#undef RHS_BEG_IDX
+#undef RHS_END_IDX
+#undef RHS_SYM
+#undef LA_SYM
+  } while (0);
+$!$
   int  top=0;
   for (unsigned del_word = delete_table()[_act]; del_word != 0; del_word >>= 1) {
     --top;
     if (del_word & 1)
-      delete static_cast<$SYM$*>(_stack_top[top]);
+      delete static_cast<$SYM$*>($STACK_TOP$[top]);
   }
   return RESULT;
 }

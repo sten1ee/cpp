@@ -1,10 +1,11 @@
 #ifndef UTIL_ARRAY_H
 #define UTIL_ARRAY_H
 
+#include <stddef.h>
 #include <stdlib.h>
 
-#ifndef UTIL_ASSERT_H
-#	include "util/assert.h"
+#ifndef   UTIL_DEBUG_H
+#include "util/debug.h"
 #endif
 
 
@@ -16,7 +17,7 @@ struct array_traits
 
   enum { initial_capacity = 32 };
 
-  static int new_capacity(int old_capacity)
+  static ptrdiff_t  new_capacity(ptrdiff_t old_capacity)
     {
       if (old_capacity <= 32)
         return old_capacity + 32;
@@ -71,9 +72,14 @@ class array_ref
         return *this;
       }
 
-    int   size() const
+    ptrdiff_t  size() const
       {
         return end() - begin();
+      }
+
+    void  flush()
+      {
+        rep()->end_data = rep()->data;
       }
 
     bool   empty() const
@@ -119,13 +125,13 @@ class array : public array_ref<TRAITS>
 {
   protected:
     static Data*  malloc(int capacity);
-    static Data*  realloc(Data* data, int additional_capacity);
+    static Data*  realloc(Data* data, ptrdiff_t new_capacity);
     static void   free(Data* data);
 
     array(const array&) {;}
     void  operator = (const array&) {;}
 
-    int capacity() const
+    ptrdiff_t  capacity() const
       {
         return rep()->end_storage - rep()->data;
       }
@@ -165,14 +171,15 @@ array<TRAITS>::malloc(int capacity)
 
 template <class TRAITS>
 array<TRAITS>::Data*
-array<TRAITS>::realloc(Data* data, int capacity)
+array<TRAITS>::realloc(Data* data, ptrdiff_t new_capacity)
 {
-  rep_t* rep = (rep_t*)((char*)data - offsetof(rep_t, data));
+  rep_t*    rep  = (rep_t*)((char*)data - offsetof(rep_t, data));
+  ptrdiff_t size = rep->end_data - rep->data;
   rep = (rep_t*)::realloc(rep, sizeof(rep_t) - sizeof(Data)
-                                             + sizeof(Data) * capacity);
+                                             + sizeof(Data) * new_capacity);
   UTIL_ASSERT(rep);
-  rep->end_storage = rep->data + capacity;
-  rep->end_data    = rep->data + (rep->end_data - rep->data);
+  rep->end_data    = rep->data + size;
+  rep->end_storage = rep->data + new_capacity;
   return rep->data;
 }
 

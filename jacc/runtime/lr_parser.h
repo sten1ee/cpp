@@ -109,10 +109,12 @@
 #ifndef lr_parser_h
 #define lr_parser_h
 
-#include <iostream.h>
 #include <assert.h>
+#include <malloc.h>
+#include <iostream>
 #include "lr_symbol.h"
 #include "scanner.h"
+#include "generic_stack.h"
 
 #define public    public:
 #define protected protected:
@@ -150,72 +152,31 @@ class lr_parser
       xfatal(const xfatal& x) : msg(x.msg) {;}
     };
 
-  /** Inner class to implement the parser stack */
-  public class stack
-    {
-      private lr_symbol**  base;
-      private lr_symbol**  top;
-      private lr_symbol**  end;
-
-      enum { DEFAULT_INIT_SIZE = 128 };
-
-      public stack(int init_size=DEFAULT_INIT_SIZE);
-            ~stack();
-
-      private void  grow();
-
-      public void  push(lr_symbol* sym)
-        {
-          if (top == end)
-            grow();
-          *top++ = sym;
+  public struct stack_allocator
+  {
+    void* malloc(size_t sz)
+      {
+        void* res = ::malloc(sz);
+        if (res == 0) {
+          throw xfatal("Fatal Error: Can't allocate parser stack");
         }
+        return res;
+      }
 
-      public void  pop()
-        {
-          assert(top != base);
-          --top;
+    void* realloc(void* p, size_t sz)
+      {
+        void* res = ::realloc(p, sz);
+        if (res == 0) {
+          throw lr_parser::xfatal("Fatal Error: Parser stack exhausted");
         }
+        return res;
+      }
 
-      public void  npop(int n)
-        {
-          top -= n;
-          assert(n >= 0);
-          assert(base <= top);
-        }
-
-      public int  size() const
-        {
-          return top - base;
-        }
-
-      public bool  empty() const
-        {
-          return top == base;
-        }
-
-      public void  remove_all_elements()
-        {
-          top = base;
-        }
-
-      public lr_symbol* element_at(int idx)
-        {
-          assert(0 <= idx && idx < size());
-          return base[idx];
-        }
-
-      public lr_symbol* peek()
-        {
-          return top[-1];
-        }
-
-      public lr_symbol** top_ptr()
-        {
-          return top;
-        }
-    };
-  public typedef class stack  stack_type;
+    void  free(void* p)
+      {
+        ::free(p);
+      }
+  };
 
   public class action_executor
     {
@@ -325,7 +286,7 @@ class lr_parser
   /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 
   /** The parse stack itself. */
-  protected class stack stack;
+  protected generic_stack<lr_symbol*, stack_allocator> stack;
 
   /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 
@@ -345,22 +306,22 @@ class lr_parser
   /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 
   /** The stream that error messages are printed to. */
-  protected ostream* _error_os;
+  protected std::ostream* _error_os;
 
   /** Simple accessor method to set the error stream */
-  public void  set_error_os(ostream& os) { _error_os = &os; }
+  public void  set_error_os(std::ostream& os) { _error_os = &os; }
 
   /** Simple accessor method to get the error stream */
-  public ostream&  error_os() { return *_error_os; }
+  public std::ostream&  error_os() { return *_error_os; }
 
   /** The stream that debug messages are printed to. */
-  protected ostream* _debug_os;
+  protected std::ostream* _debug_os;
 
   /** Simple accessor method to set the error stream */
-  public void  set_debug_os(ostream& os) { _debug_os = &os; }
+  public void  set_debug_os(std::ostream& os) { _debug_os = &os; }
 
   /** Simple accessor method to get the error stream */
-  public ostream&  debug_os() { return *_debug_os; }
+  public std::ostream&  debug_os() { return *_debug_os; }
 
   /** This is the action_executor object used by the default implementation
    *  of parse() to execute actions.  To avoid name conflicts with existing
@@ -555,13 +516,6 @@ class lr_parser
 
   /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 
-  /** Perform a parse with debugging output.  This does exactly the
-   *  same things as parse(), except that it calls debug_shift() and
-   *  debug_reduce() when shift and reduce moves are taken by the parser
-   *  and produces various other debugging messages.
-   */
-  //public lr_symbol* debug_parse();
-
   /** Error recovery status enum */
   protected enum ers_t {
     ERS_FAIL,
@@ -588,10 +542,8 @@ class lr_parser
    *  actual parse over the stored input -- modifying the real parse
    *  configuration and executing all actions.  Finally, we return the the
    *  normal parser to continue with the overall parse.
-   *
-   * @param debug should we produce debugging messages as we parse.
    */
-  protected virtual ers_t  error_recovery(bool debug);
+  protected virtual ers_t  error_recovery();
 
   /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
   /* Error recovery code */
@@ -616,13 +568,13 @@ class lr_parser
 
   public class virtual_stack
     {
-      private typedef stack_type  stack;
       /*-----------------------------------------------------------*/
       /*--- Constructor(s) ----------------------------------------*/
       /*-----------------------------------------------------------*/
 
       /** Constructor to build a virtual stack out of a real stack. */
-      public virtual_stack(stack& shadowing_stack)
+      public virtual_stack(generic_stack<lr_symbol*, stack_allocator>& 
+                           shadowing_stack)
         : real_stack(shadowing_stack), real_next(0)
         {
           /* get one element onto the virtual portion of the stack */
@@ -637,7 +589,7 @@ class lr_parser
        *  the bottom of the virtual portion of the stack, but is always left
        *  unmodified.
        */
-      protected stack& real_stack;
+      protected generic_stack<lr_symbol*, stack_allocator>& real_stack;
 
       /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 
@@ -656,7 +608,7 @@ class lr_parser
        *  becomes empty we transfer elements from the underlying stack onto
        *  this stack.
        */
-      protected stack  vstack;
+      protected generic_stack<int, stack_allocator>  vstack;
 
       /*-----------------------------------------------------------*/
       /*--- General Methods ---------------------------------------*/
@@ -680,7 +632,7 @@ class lr_parser
           real_next++;
 
           /* put the state number from the symbol onto the virtual stack */
-          vstack.push((lr_symbol*)stack_sym->get_parse_state());
+          vstack.push(stack_sym->get_parse_state());
         }
 
       /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
@@ -699,7 +651,7 @@ class lr_parser
       public int top()
         {
           assert(!vstack.empty());
-          return (int)vstack.peek();
+          return vstack.peek();
         }
 
       /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
@@ -722,7 +674,7 @@ class lr_parser
       /** Push a state number onto the stack. */
       public void push(int state_num)
         {
-          vstack.push((lr_symbol*)state_num);
+          vstack.push(state_num);
         }
 
       /*-----------------------------------------------------------*/
@@ -764,10 +716,8 @@ class lr_parser
    *  popping the stack down to a state that can shift on the special
    *  error symbol, then doing the shift.  If no suitable state exists on
    *  the stack we return false
-   *
-   * @param debug should we produce debugging messages as we parse.
    */
-  protected bool find_recovery_config(bool debug);
+  protected bool find_recovery_config();
 
   /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 
@@ -830,10 +780,8 @@ class lr_parser
    *  lookahead input without error. This basically simulates the action of
    *  parse() using only our saved "parse ahead" input, and not executing any
    *  actions.
-   *
-   * @param debug should we produce debugging messages as we parse.
    */
-  protected bool try_parse_ahead(bool debug);
+  protected bool try_parse_ahead();
 
   /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 
@@ -844,10 +792,9 @@ class lr_parser
    *  parser performs all actions and modifies the real parse configuration.
    *  This returns once we have consumed all the stored input or we accept.
    *
-   * @param   debug should we produce debugging messages as we parse.
    * @return  ERS_SUCCESS or ERS_FAIL
    */
-  protected ers_t  parse_lookahead(bool debug);
+  protected ers_t  parse_lookahead();
 
   /*-----------------------------------------------------------*/
 };

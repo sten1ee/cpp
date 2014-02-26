@@ -85,6 +85,7 @@ template <class DATA> class vector_traits
 template <class DATA> class vector_traits_ptr : public vector_traits<DATA*>
 {
   public:
+    typedef typename vector_traits<DATA*>::Data Data;
     static  void  destroy_data_array(Data* data, int data_count, bool owns_data);
 //------------------------------------------------------------------------------
 };

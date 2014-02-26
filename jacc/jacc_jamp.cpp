@@ -37,6 +37,16 @@ jacc_jamp::do_get_macro_body(const char* macro_name)
 }
 
 const char*
+jacc_jamp::try_get_macro_body(const char* macro_name)
+{
+  jacc_property_set::finger f = macros.find(macro_name);
+  if (!f) {
+    return 0;
+  }
+  return (*f).str_val();
+}
+
+const char*
 jacc_jamp::get_macro_body(const char* macro_name, const char* default_body)
 {
   jacc_property_set::finger f = macros.find(macro_name);
@@ -286,7 +296,7 @@ int main(int /*argc*/, char* argv[])
     return -1;
   }
   const char*   src_name = argv[1];
-  ifstream      src_stream(argv[1]);
+  ifstream      src_stream(argv[1], ios::nocreate);
 
   jacc_jamp     jamp;
 

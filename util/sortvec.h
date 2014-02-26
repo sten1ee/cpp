@@ -91,7 +91,7 @@ template <class TRAITS> class sorted_vector : protected vector<TRAITS>
 
     const parent& to_vector() const { return *this; }
 
-    class  finger : public iterator
+    class  finger : public parent::iterator
     {
       protected:
         friend class sorted_vector<Traits>;

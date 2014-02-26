@@ -1,14 +1,27 @@
 %%ERROR_SYNC_SIZE    (1)
-%%PARSER_CPP_INCLUDE {#include <iostream.h>}
+%%PARSER_CPP_INCLUDES {
+#include <iostream.h>
+#include <math.h>
+}
+
+%%BEFORE_ACTION {
+  /* just do *nothing* before action... */
+}
+
+%%AFTER_ACTION {
+  for (int idx = RHS_BEG_IDX; idx < RHS_END_IDX; ++idx) {
+    calc_sym* sym = RHS_SYM(idx);
+  }
+}
 
 %token PLUS, MINUS, MUL, DIV, REM, NOT, EQ, LESS, GRTR,
        QMARK, COLON, LPAREN, RPAREN, SEMI;
 
-%token <int> NUM;
-%type  <int> exp;
+%token <double> NUM;
+%type  <double> exp;
 
 %right QMARK;
-%nonassoc EQ, LESS, GRTR; 
+%nonassoc EQ, LESS, GRTR;
 %left PLUS, MINUS;
 %left MUL, DIV, REM;
 %left NOT;
@@ -32,7 +45,7 @@ exp
   | MINUS exp(a)         %prec NOT  {result = -a}
   | exp(a) MUL    exp(b)            {result = a * b}
   | exp(a) DIV    exp(b)            {result = a / b}
-  | exp(a) REM    exp(b)            {result = a % b}
+  | exp(a) REM    exp(b)            {result = fmod(a, b)}
   | exp(a) PLUS   exp(b)            {result = a + b}
   | exp(a) MINUS  exp(b)            {result = a - b}
   | exp(a) EQ     exp(b)            {result = a == b}

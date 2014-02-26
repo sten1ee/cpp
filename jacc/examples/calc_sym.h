@@ -91,7 +91,7 @@ typedef specz_calc_sym<14>  LPAREN_sym;
 typedef specz_calc_sym<4>  MINUS_sym;
 typedef specz_calc_sym<5>  MUL_sym;
 typedef specz_calc_sym<8>  NOT_sym;
-typedef specz_value_calc_sym<int, 17>  NUM_sym;
+typedef specz_value_calc_sym<double, 17>  NUM_sym;
 typedef specz_calc_sym<3>  PLUS_sym;
 typedef specz_calc_sym<12>  QMARK_sym;
 typedef specz_calc_sym<7>  REM_sym;

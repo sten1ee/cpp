@@ -54,7 +54,6 @@ void  jacc::render_action_table(ostream& out)
   // Accept is encoded as -1 (i.e. Reduce by rule 0)
   // Error is encoded as 0
 
-  out << "\n  static short";
   bool compress = this->compress_table;
   int* reduce_counts = (compress ? new int[grammar.n_prods()] : 0);
   for (int i = 0; i < table.n_states(); i++)
@@ -63,7 +62,7 @@ void  jacc::render_action_table(ostream& out)
       int def_reduce =
             (compress ? table.calc_default_reduce(state, reduce_counts) : -1);
       int def_count  = (0 <= def_reduce ? reduce_counts[def_reduce] : 0);
-      out << "\n  s" << i << "[] =" << "\n  {" << setw(3)
+      out << "\n  static short s" << i << "[] =" << "\n  {" << setw(3)
           << 2*(count_terminal_actions(state->actions) - def_count + 1) << ",";
       int  nprint = 0;
       for (LALR_action::set::const_iterator iact  = state->actions.begin();
@@ -97,12 +96,12 @@ void  jacc::render_action_table(ostream& out)
       // -(def_reduce + 1) == -(-1 + 1) == 0 which encodes Error
       //
       out << "\n    -1," << setw(4) << -(def_reduce + 1)
-          << "\n  },";
+          << "\n  };";
     }
   if (compress)
     delete[] reduce_counts;
 
-  out << "\n *action_tab[] ="
+  out << "\n  static short *action_tab[] ="
       << "\n  {";
   out.setf(ios::left);
   for (int j=0; j < table.n_states(); j++)
@@ -124,7 +123,6 @@ void  jacc::render_reduce_table(ostream& out)
   // ERROR   is encoded as -1
   // DEFAULT is encoded as -1
 
-  out << "\n  static short";
   for (int i = 0; i < table.n_states(); i++)
     {
       const LALR_state& s = *table.state(i);
@@ -132,7 +130,7 @@ void  jacc::render_reduce_table(ostream& out)
       if (nt_acts == 0)
         continue;
 
-      out << "\n  s" << i << "[] ="
+      out << "\n  static short s" << i << "[] ="
           << "\n  { " << setw(3) << 2*(nt_acts + 1) << ",";
       int nprint = 0;
       for (LALR_action::set::const_iterator iact  = s.actions.begin();
@@ -150,10 +148,10 @@ void  jacc::render_reduce_table(ostream& out)
               << setw(3) << act.shift_state->id << ",";
         }
       out << "\n     -1, -1"
-          << "\n  },";
+          << "\n  };";
     }
 
-  out << "\n *reduce_tab[] ="
+  out << "\n  static short *reduce_tab[] ="
       << "\n  {";
   out.setf(ios::left);
   for (int j=0; j < table.n_states(); j++)
@@ -300,8 +298,6 @@ void  jacc::render_do_action(ostream& out)
   opt.sym_value            = do_get_macro_body("SYM_VALUE");
   opt.stack_top            = do_get_macro_body("STACK_TOP");
   opt.result               = do_get_macro_body("RESULT");
-  opt.tag_result           = do_get_macro_body("<RESULT>");
-  opt.tag_end_result       = do_get_macro_body("</RESULT>");
   opt.custom_result_init   = do_get_macro_body("CUSTOM_RESULT_INIT");
   opt.custom_type_downcast = do_get_macro_body("CUSTOM_TYPE_DOWNCAST");
   opt.custom_type_upcast   = do_get_macro_body("CUSTOM_TYPE_UPCAST");
@@ -314,8 +310,8 @@ void  jacc::render_do_action(ostream& out)
         {         // note that it is not a jacc_prod instance !
           out << "accept"
               << tab++ << '{';
-          out <<  tab << opt.tag_result << "(0)" << opt.tag_end_result << ';'
-              <<  tab << "break;";
+          out << tab << "RESULT = (0);"
+              << tab << "break;";
           out << --tab << '}';
           continue;
         }
@@ -345,9 +341,9 @@ void  jacc::render_do_action(ostream& out)
       out << '\n'
           << tab << (action_code ? action_code : "// (no user action)") << ';'
           << '\n'
-          << tab << opt.tag_result;
-      result_symtype->render_result_sym(out, opt);
-      out << opt.tag_end_result << ';'
+          << tab << "RESULT = ";
+          result_symtype->render_result_sym(out, opt);
+      out << ';'
           << tab << "break;";
       out << --tab << '}';
     }
@@ -554,7 +550,11 @@ int  jacc::process(int argc, const char* argv[])
     this->compress_table = !no_compress_table;
   }  // --- /Local block ---
 
-  ifstream      grm_file(grm_file_name);
+#ifdef _MSC_VER
+  ifstream  grm_file(grm_file_name, ios::in || ios::nocreate);
+#else
+  ifstream  grm_file(grm_file_name);
+#endif
   if (!grm_file)
     {
       fprintf(stderr, "%s: Unable to open grammar file `%s'",
@@ -676,29 +676,22 @@ int  jacc::process(int argc, const char* argv[])
         }
     }
 
-  ifstream  tmpl_file;
-  if (tmpl_file_name != 0)
-    { // template file name was supplied as a command line option:
-      tmpl_file.open(tmpl_file_name);
-      if (!tmpl_file)
-        {
-          fprintf(stderr, "%s: Unable to open template file `%s'",
-                          app_name, tmpl_file_name);
-          return PERR_OPEN_TMPL_FILE;
-        }
+  // Time to open the template file
+  if (tmpl_file_name == 0)
+    { // template file name was not supplied as a command line option
+      // so use defaults:
+      tmpl_file_name = tab_cstr(make_file_name(argv[0], ".tmpl"));
     }
-  else
-    { // use the default template file:
-      string default_tfn = make_file_name(argv[0], ".tmpl");
-      tmpl_file.open(default_tfn.c_str());
-      if (tmpl_file)
-        tmpl_file_name = tab_cstr(default_tfn);
-      else
-        {
-          fprintf(stderr, "%s: Unable to open default template file `%s'",
-                          app_name, default_tfn.c_str());
-          return PERR_OPEN_TMPL_FILE;
-        }
+#ifdef _MSC_VER
+  ifstream  tmpl_file(tmpl_file_name, ios::in || ios::nocreate);
+#else
+  ifstream  tmpl_file(tmpl_file_name);
+#endif
+  if (!tmpl_file)
+    {
+      fprintf(stderr, "%s: Unable to open template file `%s'",
+                      app_name, tmpl_file_name);
+      return PERR_OPEN_TMPL_FILE;
     }
 
   jacc_jamp::process(tmpl_file, tmpl_file_name);

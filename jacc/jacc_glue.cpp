@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <stdarg.h>
-#include <ctype.h>
 
-#include "util/assert.h"
 #include "jacc_glue.h"
 #include "jacc.h"
 
@@ -163,6 +161,11 @@ void  jg_prod(const char* lhs_term_name)
 void  jg_rhs_part_term(const char* term_name, const char* alias)
 {
   current.rhs.parts.push(rhs_part(rhs_part::SYMBOL, term_name, alias));
+  if (alias != 0) {
+    jacc_term* term = current.grammar->term_by_name(term_name);
+    if (0 == term->symtype)
+      jg_errorf("Aliasing untyped symbol `%s'", term_name);
+  }
 }
 
 void  jg_rhs_part_code(const char* action_code, const char* alias)

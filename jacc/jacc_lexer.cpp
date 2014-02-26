@@ -1,3 +1,4 @@
+#define __USELOCALES__
 #include <ctype.h>
 #include "jacc_lexer.h"
 

@@ -73,10 +73,14 @@ struct jacc_jamp : jacc_lexer
   // the macro name enclosed in '?' symbols.
   protected: const char* do_get_macro_body(const char* macro_name);
   // If the macro is defined - returns its body,
+  // else returns NULL.
+  protected: const char* try_get_macro_body(const char* macro_name);
+  // If the macro is defined - returns its body,
   // else defines it as 'default_body' and acts like if it was defined
   // (default_body should be a stable string as it is not tab_ctr-ed)
   protected: const char* get_macro_body(const char* macro_name,
                                         const char* default_body);
+
   // Handles the directive (if implementing class is capable of handling it)
   // and returns true, or else does nothing and returns false.
   // This class handles "default" and "file" directives.

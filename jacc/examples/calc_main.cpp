@@ -1,4 +1,6 @@
 #include <ctype.h>
+#include <math.h>
+#include <iostream.h>
 #include "calc_parser.h"
 #include "calc_sym.h"
 
@@ -16,16 +18,26 @@ RESCAN:
   while (isspace(is.peek()))
     is.get();
 
-  if (isdigit(is.peek()))
+  if (isdigit(is.peek()) || is.peek() == '.')
     {
       int num = 0;
-        do
-          {
-            num *= 10;
-            num += is.get() - '0';
-          }
-        while (isdigit(is.peek()));
-        return new NUM_sym(num);
+      while (isdigit(is.peek()))
+        {
+          num *= 10;
+          num += is.get() - '0';
+        }
+      if (is.peek() == '.')
+        {
+          char buf[256], *put = buf;
+          do
+            {
+              *put++ = (char)is.get();
+            }
+          while (isdigit(is.peek()) && put < buf + sizeof(buf) - 1);
+          *put = 0;
+          return new NUM_sym(num + atof(buf));
+        }
+      return new NUM_sym(num);
     }
 
   switch (int c = is.get())
