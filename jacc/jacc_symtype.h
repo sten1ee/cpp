@@ -35,20 +35,20 @@ struct jacc_symtype
   DEFINE_NAMED_PTR_SET_BY_CSTR_KEY(named_set, jacc_symtype, type_name);
   DEFINE_NAMED_PTR_SET_BY_CSTR_KEY(value_set, jacc_symtype, value_type);
 
-  void  render_stack_decl (ostream& out, const jacc_tab& tab,
-                                         const jacc_sval& sval, int sidx,
-                                         const jacc_render_opts& opt);
-  void  render_stack_val  (ostream& out, int sidx,
-                                         const jacc_render_opts& opt);
-  void  render_stack_sym  (ostream& out, int sidx,
-                                         const jacc_render_opts& opt);
-  void  render_result_decl(ostream& out, const jacc_tab& tab,
-                                         const jacc_render_opts& opt);
-  void  render_result_val (ostream& out, const jacc_render_opts& opt);
-  void  render_result_sym (ostream& out, const jacc_render_opts& opt);
+  void  render_stack_decl (std::ostream& out, const jacc_tab& tab,
+                                              const jacc_sval& sval, int sidx,
+                                              const jacc_render_opts& opt);
+  void  render_stack_val  (std::ostream& out, int sidx,
+                                              const jacc_render_opts& opt);
+  void  render_stack_sym  (std::ostream& out, int sidx,
+                                              const jacc_render_opts& opt);
+  void  render_result_decl(std::ostream& out, const jacc_tab& tab,
+                                              const jacc_render_opts& opt);
+  void  render_result_val (std::ostream& out, const jacc_render_opts& opt);
+  void  render_result_sym (std::ostream& out, const jacc_render_opts& opt);
 
   // returns true iff a typedef was rendered:
-  bool  render_typedef(ostream& out, const jacc_render_opts& opt);
+  bool  render_typedef(std::ostream& out, const jacc_render_opts& opt);
 };
 
 struct jacc_symtype_mgr
@@ -67,7 +67,7 @@ public:
                                    const char* type_name=0);
   jacc_symtype&  specz_symtype_for(jacc_term* term,
                                    const char* type_name=0);
-  void  render_symtype_defs(ostream& out, const jacc_render_opts& opt);
+  void  render_symtype_defs(std::ostream& out, const jacc_render_opts& opt);
 
   void  set_log(jacc_log* l) { log = l; }
 };

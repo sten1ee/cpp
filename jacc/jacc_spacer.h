@@ -1,7 +1,7 @@
 #ifndef jacc_spacer_h
 #define jacc_spacer_h
 
-#include <iostream.h>
+#include <iostream>
 #include "util/assert.h"
 
 struct jacc_spacer_base
@@ -71,7 +71,7 @@ struct jacc_spacer : jacc_spacer_base
         return p_spc_slice;
       }
     
-    ostream& put_in(ostream& os) const
+      std::ostream& put_in(std::ostream& os) const
       {
         if (1 < WIDTH)
           os << '\n';
@@ -80,7 +80,7 @@ struct jacc_spacer : jacc_spacer_base
 };
 
 template <int WIDTH>
-inline ostream& operator << (ostream& os, const jacc_spacer<WIDTH>& spacer)
+inline std::ostream& operator << (std::ostream& os, const jacc_spacer<WIDTH>& spacer)
   {
     return spacer.put_in(os);
   }

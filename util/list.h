@@ -16,10 +16,10 @@
 template <class TRAITS>
 struct list_node
 {
-    TRAITS::Data  data;
+    typename TRAITS::Data  data;
     list_node*    next;
 
-    list_node(TRAITS::DataIn _data, list_node* _next)
+    list_node(typename TRAITS::DataIn _data, list_node* _next)
       : data(_data), next(_next)
     {;}
 #ifdef OPTION_CUSTOM_ALLOCATOR
@@ -53,58 +53,29 @@ template <class TRAITS> class list
     typedef typename Traits::Data        Data;
     typedef typename Traits::DataIn      DataIn;
 
-    class iterator;
-    class const_iterator;
-
-    class iterator
-    {
-      protected:
-
-        friend  class list<TRAITS>;
-        friend  class const_iterator;
-
-        node_type**  ppnode;
-
-        iterator(node_type** _ppnode) : ppnode(_ppnode) {;}
-
-      public:
-        iterator()                     { ppnode = 0; }
-        iterator(const iterator& iter) { ppnode = iter.ppnode;    }
-
-        iterator& operator = (const iterator& iter)
-                                       { ppnode = iter.ppnode; return *this; }
-        bool      operator ==(const iterator& iter) const
-                                       { return ppnode == iter.ppnode; }
-
-        iterator& operator ++ ()
-          { ppnode = &(*ppnode)->next; return *this; }
-        iterator  operator ++ (int)
-          { iterator tmp = *this; ppnode = &(*ppnode)->next; return tmp; }
-
-        Data& operator * () const      { return (*ppnode)->data;  }
-    };
-
     class const_iterator
     {
       protected:
 
         friend  class list<TRAITS>;
 
-        typedef node_type*   pnode_type;
+        node_type**   ppnode;
 
-        const pnode_type*   ppnode;
-
-        const_iterator(const pnode_type* _ppnode) : ppnode(_ppnode) {;}
+        const_iterator(node_type** _ppnode) : ppnode(_ppnode) {;}
 
       public:
         const_iterator()                           { ppnode = 0; }
-        const_iterator(const iterator& iter)       { ppnode = iter.ppnode; }
         const_iterator(const const_iterator& iter) { ppnode = iter.ppnode; }
 
         const_iterator& operator = (const const_iterator& iter)
                                        { ppnode = iter.ppnode; return *this; }
-        bool      operator ==(const const_iterator& iter) const
+        bool    operator == (const const_iterator& iter) const
                                        { return ppnode == iter.ppnode; }
+
+        bool    operator != (const const_iterator& iter) const
+                                       { return ppnode != iter.ppnode; }
+
+        bool    initialized() const { return ppnode != 0; }
 
         const_iterator& operator ++ ()
           { ppnode = &(*ppnode)->next; return *this; }
@@ -112,6 +83,30 @@ template <class TRAITS> class list
           { const_iterator tmp = *this; ppnode = &(*ppnode)->next; return tmp; }
 
         const Data& operator * () const      { return (*ppnode)->data;  }
+    };
+
+    class iterator : public const_iterator
+    {
+      protected:
+
+        friend  class list<TRAITS>;
+        friend  class const_iterator;
+
+        iterator(node_type** _ppnode) : const_iterator(_ppnode) {;}
+
+      public:
+        iterator()                     : const_iterator() {;}
+        iterator(const iterator& iter) : const_iterator(iter) {;}
+
+        iterator& operator = (const iterator& iter)
+                                       { ppnode = iter.ppnode; return *this; }
+
+        iterator& operator ++ ()
+          { ppnode = &(*ppnode)->next; return *this; }
+        iterator  operator ++ (int)
+          { iterator tmp = *this; ppnode = &(*ppnode)->next; return tmp; }
+
+        Data& operator * () const      { return (*ppnode)->data;  }
     };
 
   private:
@@ -125,20 +120,17 @@ template <class TRAITS> class list
       bool         owns_data;
     };
 
-    typedef node_type*    pnode_type;
-    typedef node_type**  ppnode_type;
-
     header_type* _header;
 
-    pnode_type&  _head     ()       { return _header->head;     }
-    ppnode_type& _rear_ptr ()       { return _header->rear_ptr; }
+    node_type*&  _head     ()       { return _header->head;     }
+    node_type**& _rear_ptr ()       { return _header->rear_ptr; }
     int&         _size     ()       { return _header->size;     }
     bool&        _owns_data()       { return _header->owns_data;}
 
   protected:
 
-    const pnode_type&   head     () const { return _header->head;     }
-    const ppnode_type&  rear_ptr () const { return _header->rear_ptr; }
+    node_type* const &   head     () const { return _header->head;     }
+    node_type** const &  rear_ptr () const { return _header->rear_ptr; }
 
     void  drop()
       {
@@ -322,28 +314,32 @@ void  list<TRAITS>::insert(const iterator& position, DataIn data)
 }
 
 template <class TRAITS>
-list<TRAITS>::Data& list<TRAITS>::front()
+inline
+typename list<TRAITS>::Data& list<TRAITS>::front()
 {
   UTIL_ASSERT(head() != 0);
   return head()->data;
 }
 
 template <class TRAITS>
-const list<TRAITS>::Data& list<TRAITS>::front() const
+inline
+const typename list<TRAITS>::Data& list<TRAITS>::front() const
 {
   UTIL_ASSERT(head() != 0);
   return head()->data;
 }
 
 template <class TRAITS>
-list<TRAITS>::Data& list<TRAITS>::back()
+inline
+typename list<TRAITS>::Data& list<TRAITS>::back()
 {
   UTIL_ASSERT(head() != 0);
   return ((node_type*)((char*)rear_ptr() - offsetof(node_type, next)))->data;
 }
 
 template <class TRAITS>
-const list<TRAITS>::Data& list<TRAITS>::back() const
+inline
+const typename list<TRAITS>::Data& list<TRAITS>::back() const
 {
   UTIL_ASSERT(head() != 0);
   return ((node_type*)((char*)rear_ptr() - offsetof(node_type, next)))->data;

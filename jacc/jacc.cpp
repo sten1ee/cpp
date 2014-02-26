@@ -1,6 +1,6 @@
 #include <ctype.h>
-#include <fstream.h>
-#include <iomanip.h>
+#include <fstream>
+#include <iomanip>
 #ifdef TIME_JACC
 # include <sys/timeb.h>
 #endif
@@ -13,7 +13,6 @@
 #ifdef ALLOCATOR_DIAG
 # include "util/diag.h"
 #endif
-
 
 bool  jacc::code_refers_to_ident(const char* code, const char* ident)
 {
@@ -47,7 +46,7 @@ int  jacc::count_nonterminal_actions(const LALR_action::set& actions)
   return actions.size() - count_terminal_actions(actions);
 }
 
-void  jacc::render_action_table(ostream& out)
+void  jacc::render_action_table(std::ostream& out)
 {
   // Shift and goto S is encoded as   S+1
   // Reduce by rule R is encoded as -(R+1)
@@ -62,7 +61,7 @@ void  jacc::render_action_table(ostream& out)
       int def_reduce =
             (compress ? table.calc_default_reduce(state, reduce_counts) : -1);
       int def_count  = (0 <= def_reduce ? reduce_counts[def_reduce] : 0);
-      out << "\n  static short s" << i << "[] =" << "\n  {" << setw(3)
+      out << "\n  static short s" << i << "[] =" << "\n  {" << std::setw(3)
           << 2*(count_terminal_actions(state->actions) - def_count + 1) << ",";
       int  nprint = 0;
       for (LALR_action::set::const_iterator iact  = state->actions.begin();
@@ -78,7 +77,7 @@ void  jacc::render_action_table(ostream& out)
 
           if (nprint++ % 7 == 0)
             out << "\n   ";
-          out << setw(3) << act.la_term->id << ',' << setw(4);
+          out << std::setw(3) << act.la_term->id << ',' << std::setw(4);
           if (act.getf(LALR_action::DO_SHIFT))
             out <<  (act.shift_state->id + 1);
           else if (act.getf(LALR_action::DO_REDUCE))
@@ -95,7 +94,7 @@ void  jacc::render_action_table(ostream& out)
       // Note that if def_reduce == -1 (i.e. no default reduce)
       // -(def_reduce + 1) == -(-1 + 1) == 0 which encodes Error
       //
-      out << "\n    -1," << setw(4) << -(def_reduce + 1)
+      out << "\n    -1," << std::setw(4) << -(def_reduce + 1)
           << "\n  };";
     }
   if (compress)
@@ -103,21 +102,21 @@ void  jacc::render_action_table(ostream& out)
 
   out << "\n  static short *action_tab[] ="
       << "\n  {";
-  out.setf(ios::left);
+  out.setf(std::ios::left);
   for (int j=0; j < table.n_states(); j++)
     {
       if (j % 8 == 0)
         out << "\n    ";
-      out << 's' << setw(3) << j << "+1";
+      out << 's' << std::setw(3) << j << "+1";
       if (j != table.n_states()-1)
         out << ", ";
     }
-  out.unsetf(ios::left);
+  out.unsetf(std::ios::left);
   out << "\n  };"
       << "\n  return action_tab;";
 }
 
-void  jacc::render_reduce_table(ostream& out)
+void  jacc::render_reduce_table(std::ostream& out)
 {
   // Goto S  is encoded as  S
   // ERROR   is encoded as -1
@@ -131,7 +130,7 @@ void  jacc::render_reduce_table(ostream& out)
         continue;
 
       out << "\n  static short s" << i << "[] ="
-          << "\n  { " << setw(3) << 2*(nt_acts + 1) << ",";
+          << "\n  { " << std::setw(3) << 2*(nt_acts + 1) << ",";
       int nprint = 0;
       for (LALR_action::set::const_iterator iact  = s.actions.begin();
                                             iact != s.actions.end();
@@ -144,8 +143,8 @@ void  jacc::render_reduce_table(ostream& out)
           ASSERT(act.getf(LALR_action::DO_SHIFT));
           if (nprint++ % 8 == 0)
             out << "\n    ";
-          out << setw(3) << act.la_term->id << ","
-              << setw(3) << act.shift_state->id << ",";
+          out << std::setw(3) << act.la_term->id << ","
+              << std::setw(3) << act.shift_state->id << ",";
         }
       out << "\n     -1, -1"
           << "\n  };";
@@ -153,7 +152,7 @@ void  jacc::render_reduce_table(ostream& out)
 
   out << "\n  static short *reduce_tab[] ="
       << "\n  {";
-  out.setf(ios::left);
+  out.setf(std::ios::left);
   for (int j=0; j < table.n_states(); j++)
     {
       if (j % 8 == 0)
@@ -161,17 +160,17 @@ void  jacc::render_reduce_table(ostream& out)
       if (0 == count_nonterminal_actions(table.state(j)->actions))
         out << "     0";
       else
-        out << 's' << setw(3) << j << "+1";
+        out << 's' << std::setw(3) << j << "+1";
 
       if (j != table.n_states()-1)
         out << ", ";
     }
-  out.unsetf(ios::left);
+  out.unsetf(std::ios::left);
   out << "\n  };"
       << "\n  return reduce_tab;";
 }
 
-void  jacc::render_production_table(ostream& out)
+void  jacc::render_production_table(std::ostream& out)
 {
   out << "\n  static prod_entry  production_tab[] ="
       << "\n  {";
@@ -181,8 +180,8 @@ void  jacc::render_production_table(ostream& out)
       Prod* prod = grammar.prod(i);
       if (i % 8 == 0)
         out << "\n    ";
-      out << '{' << setw(3) << prod->lhs_term->id << ','
-                 << setw(2) << prod->rhs_terms.size() << '}';
+      out << '{' << std::setw(3) << prod->lhs_term->id << ','
+                 << std::setw(2) << prod->rhs_terms.size() << '}';
       if (i != grammar.n_prods()-1)
         out << ',';
     }
@@ -191,7 +190,7 @@ void  jacc::render_production_table(ostream& out)
       << "\n  return production_tab;";
 }
 
-void  jacc::render_delete_table(ostream& out)
+void  jacc::render_delete_table(std::ostream& out)
 {
   out << "\n  static del_entry  delete_tab[] ="
       << "\n  {"
@@ -208,7 +207,7 @@ void  jacc::render_delete_table(ostream& out)
     }
     if (i % 14 == 0)
       out << "\n    ";
-    out << setw(3) << del_word;
+    out << std::setw(3) << del_word;
     if (i != 0)
       out << ", ";
   }
@@ -216,7 +215,7 @@ void  jacc::render_delete_table(ostream& out)
       << "\n  return delete_tab;";
 }
 
-void  jacc::render_symtype_enum(ostream& out)
+void  jacc::render_symtype_enum(std::ostream& out)
 {
   const char* tag_symtype     = do_get_macro_body("<SYMTYPE>");
   const char* tag_end_symtype = do_get_macro_body("</SYMTYPE>");
@@ -250,7 +249,7 @@ void  jacc::render_symtype_enum(ostream& out)
   }
 }
 
-void  jacc::render_symtype_defs(ostream& out)
+void  jacc::render_symtype_defs(std::ostream& out)
 {
   jacc_render_opts opt;
   DEBUGIN(zfill(&opt));
@@ -270,7 +269,7 @@ void  jacc::render_symtype_defs(ostream& out)
   symtype_mgr.render_symtype_defs(out, opt);
 }
 
-void  jacc_prod::render(ostream& out) const
+void  jacc_prod::render(std::ostream& out) const
 {
   out << lhs_term->name;
   if (is_mra_prod())
@@ -287,7 +286,7 @@ void  jacc_prod::render(ostream& out) const
     }
 }
 
-void  jacc::render_do_action(ostream& out)
+void  jacc::render_do_action(std::ostream& out)
 {
   jacc_render_opts opt;
   DEBUGIN(zfill(&opt));
@@ -355,7 +354,7 @@ void  jacc::render_do_action(ostream& out)
 bool
 jacc::try_handle_directive(const string& directive_name)
 {
-  void (jacc::*renderer)(ostream& os) = 0;
+  void (jacc::*renderer)(std::ostream& os) = 0;
 
   if (jacc_jamp::try_handle_directive(directive_name))
     return true;
@@ -513,9 +512,8 @@ int  jacc::process(int argc, const char* argv[])
       {
         fprintf(stdout, "%s",
 "... Jacc is Just Another Compiler Compiler or at least it pretends to be ...\n"
-"It is authored by Stanislav Jordanov (stenly@sirma.bg & jerk0main@yahoo.com)\n"
-"Further information is likely to be found at www.sirma.bg/stenly/jacc.html\n"
-"                           Dedication. For Joanna        Sofia, " __DATE__
+"It is authored by Stanislav Jordanov (stenlee@gmail.com)\n"
+"                           Dedication: For Joanna"//        Sofia, build date:" __DATE__
         );
         return P_SUCCESS;
       }
@@ -550,11 +548,8 @@ int  jacc::process(int argc, const char* argv[])
     this->compress_table = !no_compress_table;
   }  // --- /Local block ---
 
-#ifdef _MSC_VER
-  ifstream  grm_file(grm_file_name, ios::in || ios::nocreate);
-#else
-  ifstream  grm_file(grm_file_name);
-#endif
+  std::ifstream  grm_file(grm_file_name);
+
   if (!grm_file)
     {
       fprintf(stderr, "%s: Unable to open grammar file `%s'",
@@ -608,7 +603,7 @@ int  jacc::process(int argc, const char* argv[])
   if (create_out_file)
     {
       string  out_file_name = make_file_name(grm_file_name, ".out");
-      ofstream  out_file(out_file_name.c_str());
+      std::ofstream  out_file(out_file_name.c_str());
       if (out_file)
         {
           int pf = PF_DEFAULTS;
@@ -682,11 +677,8 @@ int  jacc::process(int argc, const char* argv[])
       // so use defaults:
       tmpl_file_name = tab_cstr(make_file_name(argv[0], ".tmpl"));
     }
-#ifdef _MSC_VER
-  ifstream  tmpl_file(tmpl_file_name, ios::in || ios::nocreate);
-#else
-  ifstream  tmpl_file(tmpl_file_name);
-#endif
+
+  std::ifstream  tmpl_file(tmpl_file_name);
   if (!tmpl_file)
     {
       fprintf(stderr, "%s: Unable to open template file `%s'",

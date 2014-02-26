@@ -108,7 +108,7 @@ jacc_symtype::is_identical_with(const jacc_symtype& other) const
 //  code rendering methods
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 void
-jacc_symtype::render_stack_decl(      ostream&          out,
+jacc_symtype::render_stack_decl( std::ostream&          out,
                                 const jacc_tab&         tab,
                                 const jacc_sval&        sval,
                                       int               sidx,
@@ -129,7 +129,7 @@ jacc_symtype::render_stack_decl(      ostream&          out,
 }
 
 void
-jacc_symtype::render_stack_val(ostream& out, int sidx,
+jacc_symtype::render_stack_val(std::ostream& out, int sidx,
                                              const jacc_render_opts& opt)
 {
   if (kind == THE_SYM)
@@ -147,7 +147,7 @@ jacc_symtype::render_stack_val(ostream& out, int sidx,
 }
 
 void
-jacc_symtype::render_stack_sym(ostream& out, int sidx,
+jacc_symtype::render_stack_sym(std::ostream& out, int sidx,
                                              const jacc_render_opts& opt)
 {
   out << "static_cast<" << opt.sym << "*>("
@@ -155,8 +155,8 @@ jacc_symtype::render_stack_sym(ostream& out, int sidx,
 }
 
 void
-jacc_symtype::render_result_decl(ostream& out, const jacc_tab& tab,
-                                               const jacc_render_opts& opt)
+jacc_symtype::render_result_decl(std::ostream& out, const jacc_tab& tab,
+                                                    const jacc_render_opts& opt)
 {
   out << tab;
   if (kind == THE_SYM)
@@ -178,7 +178,7 @@ jacc_symtype::render_result_decl(ostream& out, const jacc_tab& tab,
 }
 
 void
-jacc_symtype::render_result_val(ostream& out, const jacc_render_opts& opt)
+jacc_symtype::render_result_val(std::ostream& out, const jacc_render_opts& opt)
 {
   if (kind == THE_SYM)
     out << opt.sym_value;
@@ -189,7 +189,7 @@ jacc_symtype::render_result_val(ostream& out, const jacc_render_opts& opt)
 }
 
 void
-jacc_symtype::render_result_sym(ostream& out, const jacc_render_opts& opt)
+jacc_symtype::render_result_sym(std::ostream& out, const jacc_render_opts& opt)
 {
   if (kind == CUSTOM)
     out << opt.custom_type_upcast << '(' << opt.result << ");";
@@ -198,7 +198,7 @@ jacc_symtype::render_result_sym(ostream& out, const jacc_render_opts& opt)
 }
 
 bool
-jacc_symtype::render_typedef(ostream& out, const jacc_render_opts& opt)
+jacc_symtype::render_typedef(std::ostream& out, const jacc_render_opts& opt)
 {
   if (specz_term != 0) {
     if (kind == THE_SYM)
@@ -222,7 +222,7 @@ jacc_symtype::render_typedef(ostream& out, const jacc_render_opts& opt)
 //  a routine to render the symtype(s) declarations
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 void
-jacc_symtype_mgr::render_symtype_defs(ostream& out, const jacc_render_opts& opt)
+jacc_symtype_mgr::render_symtype_defs(std::ostream& out, const jacc_render_opts& opt)
 {
   for (jacc_symtype::named_set::iterator inst  = named_symtypes.begin();
                                          inst != named_symtypes.end();

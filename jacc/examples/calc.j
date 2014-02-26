@@ -1,7 +1,10 @@
 %%ERROR_SYNC_SIZE    (1)
 %%PARSER_CPP_INCLUDES {
-#include <iostream.h>
+#include <iostream>
 #include <math.h>
+
+using std::cout;
+using std::endl;
 }
 
 %%BEFORE_ACTION {

@@ -13,12 +13,9 @@ template <class DATA> class list_traits
 };
 
 
-template <class DATA> class list_traits_ptr
+template <class DATA> class list_traits_ptr : public list_traits<DATA*>
 {
   public:
-    typedef DATA* Data;
-    typedef DATA* DataIn;
-
     static  void  destroy_data(DATA* pdata, bool del_data)
       {
         if (del_data) {

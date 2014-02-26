@@ -88,7 +88,7 @@ struct jacc_prod : Prod
 
   // renders some human-readable description of the production
   // (e.g. 'exp ::= exp(a) PLUS exp(b)')
-  void  render(ostream& out) const;
+  void  render(std::ostream& out) const;
   // checks if this is a phantom prod created to execute a midrule action:
   bool  is_mra_prod() const { return lhs_term->name[0] == '@'; }
 };
@@ -165,15 +165,15 @@ struct jacc : jacc_jamp
     bool              compress_table;
 
     // The parse method resides in jacc_glue.cpp
-    void  parse_grammar(istream& grm_file, const char* grm_file_name);
+    void  parse_grammar(std::istream& grm_file, const char* grm_file_name);
 
-    void  render_action_table(ostream& out);
-    void  render_reduce_table(ostream& out);
-    void  render_production_table(ostream& out);
-    void  render_do_action(ostream& out);
-    void  render_delete_table(ostream& out);
-    void  render_symtype_enum(ostream& out);
-    void  render_symtype_defs(ostream& out);
+    void  render_action_table(std::ostream& out);
+    void  render_reduce_table(std::ostream& out);
+    void  render_production_table(std::ostream& out);
+    void  render_do_action(std::ostream& out);
+    void  render_delete_table(std::ostream& out);
+    void  render_symtype_enum(std::ostream& out);
+    void  render_symtype_defs(std::ostream& out);
 
     // method inherited from class jacc_jamp:
     virtual bool  try_handle_directive(const string& directive_name);

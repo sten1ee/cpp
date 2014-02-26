@@ -15,13 +15,13 @@ template <class TRAITS> class sorted_vector : protected vector<TRAITS>
   public:
     typedef vector<TRAITS>  parent;
 
-    typedef parent::Traits          Traits;
-    typedef parent::Data            Data;
-    typedef parent::DataIn          DataIn;
-    typedef parent::iterator        iterator;
-    typedef parent::const_iterator  const_iterator;
-    typedef parent::copy_tag        copy_tag;
-    typedef parent::alias_tag       alias_tag;
+    typedef typename parent::Traits          Traits;
+    typedef typename parent::Data            Data;
+    typedef typename parent::DataIn          DataIn;
+    typedef typename parent::iterator        iterator;
+    typedef typename parent::const_iterator  const_iterator;
+    typedef typename parent::copy_tag        copy_tag;
+    typedef typename parent::alias_tag       alias_tag;
 
     typedef typename Traits::DataKey DataKey;
     
@@ -176,7 +176,7 @@ template <class TRAITS> class sorted_vector : protected vector<TRAITS>
 
 
 template <class TRAITS>
-sorted_vector<TRAITS>::finger  sorted_vector<TRAITS>::find(DataKey key)
+typename sorted_vector<TRAITS>::finger  sorted_vector<TRAITS>::find(DataKey key)
 {
   int  low = 0, high = size(), mid;
   while (low < high) {

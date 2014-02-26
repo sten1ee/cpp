@@ -1,12 +1,12 @@
 #include "jacc_jamp.h"
-#include <fstream.h>
+#include <fstream>
 
 bool  jacc_jamp::set_output_file(const char* file_name)
 {
   if (del_pos)
     delete pos;
 
-  ostream* new_pos = new ofstream(file_name);
+  std::ostream* new_pos = new std::ofstream(file_name);
   if (!*new_pos) {
     errorf("Unable to open output file `%s'", file_name);
     delete new_pos;
@@ -240,7 +240,7 @@ bool  jacc_jamp::try_handle_directive(const string& directive_name)
     string file_name;
     if (TT_PHRASE != next_token(file_name)) {
       error("file directive missing file name");
-      pos = &cerr;
+      pos = &std::cerr;
     }
     else
       set_output_file(tab_cstr(file_name));
@@ -259,7 +259,7 @@ void  jacc_jamp::handle_directive(const string& directive_name)
 }
 
 
-void  jacc_jamp::process(istream& src_stream, const string& src_name)
+void  jacc_jamp::process(std::istream& src_stream, const string& src_name)
 {
   jacc_source  src(src_stream, src_name);
   push_source(&src);
@@ -295,8 +295,8 @@ int main(int /*argc*/, char* argv[])
     fprintf(stderr, "Usage: %s file-name", prog_name);
     return -1;
   }
-  const char*   src_name = argv[1];
-  ifstream      src_stream(argv[1], ios::nocreate);
+  const char*     src_name = argv[1];
+  std::ifstream   src_stream(argv[1], ios::nocreate);
 
   jacc_jamp     jamp;
 

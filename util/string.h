@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <limits.h>
-#include <iostream.h>
+#include <iostream>
 
 #ifndef   UTIL_DEBUG_H
 #include "util/debug.h"
@@ -194,10 +194,10 @@ template <class CHAR> class String
 };
 
 template <class CHAR>
-String<CHAR>::Rep
+typename String<CHAR>::Rep
 String<CHAR>::TheEmptyRep = { 0, 0, 1, {CHAR(0)}};
 template <class CHAR>
-String<CHAR>::Char*
+typename String<CHAR>::Char*
 String<CHAR>::TheEmptyRep_chr = String<CHAR>::TheEmptyRep.chr;
 template <class CHAR>
 size_t  String<CHAR>::ResizeIncrement = 32;
@@ -410,7 +410,7 @@ hash_t  String<CHAR>::Hash(const Char* s, size_t n)
 typedef String<char> string;
 
 inline
-ostream& operator << (ostream& os, const string& s)
+std::ostream& operator << (std::ostream& os, const string& s)
 {
   return os << s.c_str();
 }

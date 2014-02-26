@@ -3,8 +3,8 @@
 // Send comments and suggestions to stenly@sirma.bg
 // Last modified 14.12.2000
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#ifndef UTIL_DIAG_H
-#define UTIL_DIAG_H
+#ifndef DIAG_H
+#define DIAG_H
 
 #ifdef ALLOCATOR_DIAG
 
@@ -35,4 +35,4 @@ void  print_allocator_stats (FILE*);
 
 #endif//ALLOCATOR_DIAG
 
-#endif//UTIL_DIAG_H
+#endif//DIAG_H

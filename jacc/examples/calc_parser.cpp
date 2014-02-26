@@ -1,7 +1,10 @@
 #include "calc_parser.h"
 
-#include <iostream.h>
+#include <iostream>
 #include <math.h>
+
+using std::cout;
+using std::endl;
 
 
 short** calc_parser::action_table()
@@ -356,6 +359,7 @@ calc_parser::do_action(int _act, lr_parser& _parser, lr_symbol** _stack_top)
 #define RHS_BEG_IDX  (-RHS_SIZE)
 #define RHS_END_IDX  (0)
 #define RHS_SYM(IDX) static_cast<calc_sym*>(_stack_top[IDX])
+#define LA_SYM       static_cast<calc_sym*>(cur_token)
     
   
 
@@ -363,6 +367,7 @@ calc_parser::do_action(int _act, lr_parser& _parser, lr_symbol** _stack_top)
 #undef RHS_BEG_IDX
 #undef RHS_END_IDX
 #undef RHS_SYM
+#undef LA_SYM
   calc_sym* RESULT;
 
   switch (_act) {
@@ -604,6 +609,7 @@ calc_parser::do_action(int _act, lr_parser& _parser, lr_symbol** _stack_top)
 #define RHS_BEG_IDX  (-RHS_SIZE)
 #define RHS_END_IDX  (0)
 #define RHS_SYM(IDX) static_cast<calc_sym*>(_stack_top[IDX])
+#define LA_SYM       static_cast<calc_sym*>(cur_token)
     
   for (int idx = RHS_BEG_IDX; idx < RHS_END_IDX; ++idx) {
     calc_sym* sym = RHS_SYM(idx);
@@ -613,6 +619,7 @@ calc_parser::do_action(int _act, lr_parser& _parser, lr_symbol** _stack_top)
 #undef RHS_BEG_IDX
 #undef RHS_END_IDX
 #undef RHS_SYM
+#undef LA_SYM
   } while (0);
 
   int  top=0;

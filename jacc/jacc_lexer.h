@@ -33,7 +33,7 @@ struct jacc_source
     int line, col;
   };
 
-  jacc_source(istream& src_stream, const string& src_name);
+  jacc_source(std::istream& src_stream, const string& src_name);
 
   // reads one more character from the input; returns false on EOF:
   bool  next_char();
@@ -46,7 +46,7 @@ struct jacc_source
 
   private:
     int           _cc, _nc;   // current & next chars of the input stream (IS)
-    istream&      _stream;    // source IS; only next_token() reads it !
+    std::istream& _stream;    // source IS; only next_token() reads it !
     const string  _name;      // IS's name; used to report error locations.
     location_t    _location;  // current position in the IS; used to report
                               // exact error locations.

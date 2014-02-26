@@ -120,8 +120,8 @@ class array_ref
       }
 };
 
-template <class TRAITS>
-class array : public array_ref<TRAITS>
+template <class DATA>
+class array : public array_ref<DATA>
 {
   protected:
     static Data*  malloc(int capacity);
@@ -157,9 +157,9 @@ class array : public array_ref<TRAITS>
     void  push(DataIn d);
 };
 
-template <class TRAITS>
-array<TRAITS>::Data*
-array<TRAITS>::malloc(int capacity)
+template <class DATA>
+typename array<DATA>::Data*
+array<DATA>::malloc(int capacity)
 {
   rep_t* rep = (rep_t*)::malloc(sizeof(rep_t) - sizeof(Data)
                                               + sizeof(Data) * capacity);
@@ -169,9 +169,9 @@ array<TRAITS>::malloc(int capacity)
   return rep->data;
 }
 
-template <class TRAITS>
-array<TRAITS>::Data*
-array<TRAITS>::realloc(Data* data, ptrdiff_t new_capacity)
+template <class DATA>
+typename array<DATA>::Data*
+array<DATA>::realloc(Data* data, ptrdiff_t new_capacity)
 {
   rep_t*    rep  = (rep_t*)((char*)data - offsetof(rep_t, data));
   ptrdiff_t size = rep->end_data - rep->data;
@@ -183,16 +183,16 @@ array<TRAITS>::realloc(Data* data, ptrdiff_t new_capacity)
   return rep->data;
 }
 
-template <class TRAITS>
+template <class DATA>
 void
-array<TRAITS>::free(Data* data)
+array<DATA>::free(Data* data)
 {
   rep_t* rep = (rep_t*)((char*)data - offsetof(rep_t, data));
   ::free(rep);
 }
 
-template <class TRAITS>
-array<TRAITS>::array(Data* src, int sz)
+template <class DATA>
+array<DATA>::array(Data* src, int sz)
 {
   UTIL_ASSERT(0 <= sz);
   Data* dst = data = malloc(sz);
@@ -203,9 +203,9 @@ array<TRAITS>::array(Data* src, int sz)
     }
 }
 
-template <class TRAITS>
+template <class DATA>
 void
-array<TRAITS>::push(DataIn d)
+array<DATA>::push(DataIn d)
 {
   rep_t* rep = this->rep();
   if (rep->end_storage == rep->end_data)

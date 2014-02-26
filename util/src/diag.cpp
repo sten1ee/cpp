@@ -5,7 +5,7 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #ifdef ALLOCATOR_DIAG
 
-#include "util/diag.h"
+#include "diag.h"
 
 namespace diag {
 

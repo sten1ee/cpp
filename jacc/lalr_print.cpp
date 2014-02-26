@@ -1,7 +1,10 @@
 #include "lalr.h"
 #include "lalr_print.h"
-#include <iostream.h>
-#include <iomanip.h>
+#include <iostream>
+#include <iomanip>
+
+using std::ostream;
+using std::setw;
 
 static int  max_t_strlen;
 static int  max_nt_strlen;
@@ -144,7 +147,7 @@ void  verbose_print_term(ostream& os, const Term* term)
 
 void  print_prod(ostream& os, const Prod* p)
 {
-  os << setw(3) << p->id << ": " << nt_aligned(p->lhs_term) << " -> ";
+  os << std::setw(3) << p->id << ": " << nt_aligned(p->lhs_term) << " -> ";
   for (int i = 0; i < p->rhs_terms.size(); i++) {
     os << " ";
     print_term(os, p->rhs_terms[i]);

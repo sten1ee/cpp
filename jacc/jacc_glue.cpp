@@ -75,7 +75,7 @@ static struct current {
 
 // interface to bison:
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-void  jacc::parse_grammar(istream& grm_file, const char* grm_file_name)
+void  jacc::parse_grammar(std::istream& grm_file, const char* grm_file_name)
 {
   current.lexer       =  this;  // jacc subclasses jamp subclasses lexer !
   current.grammar     = &grammar;

@@ -1,20 +1,22 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Win32 memory allocator for small objects (1 - 256 bytes)
 // Send comments and suggestions to stenly@sirma.bg
-// Last modified 19.12.2000
+// Last modified Feb 2007
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #include <windows.h>
 
-#ifndef UTIL_ASSERT
+#ifdef ALLOCATOR_DEBUG
+# include <assert.h>
+# define ASSERT(C) assert(C)
+# define DEBUGIN(STM) STM
+#else
 # define ASSERT(C)
 # define DEBUGIN(STM)
-#else
-# include "util/assert.h"
 #endif
 
-#include "util/allocat.h"
+#include "allocat.h"
 #ifdef ALLOCATOR_DIAG
-# include "util/diag.h"
+# include "diag.h"
 using namespace diag;
 #endif
 
@@ -33,7 +35,7 @@ struct blk_t
 
 
 #ifdef ALLOCATOR_THREADSAFE
-# if defined(ALLOCATOR_SYNC_CS)
+
 // Use CRITICAL_SECTION to synchronize allocator:
 typedef CRITICAL_SECTION lock_t;
 
@@ -64,29 +66,6 @@ void  RELEASE_LOCK(lock_t& lock, void*)
 #  define CHECK_LOCK(LOCK,KEY)   ((void)0)
 #  define DECLARE_KEY(KEYNAME)   short  KEYNAME
 
-# elif defined(ALLOCATOR_SYNC_MX)
-#  include "sync.h"
-   typedef mutex lock_t;
-#  define CREATE_LOCK(LOCK)      ((void)0)
-#  define DESTROY_LOCK(LOCK)     ((void)0)
-#  define ACQUIRE_LOCK(LOCK,KEY) ASSERT(KEY); LOCK.acquire(KEY)
-#  define RELEASE_LOCK(LOCK,KEY) ASSERT(KEY); LOCK.release(KEY)
-#  define CHECK_LOCK(LOCK,KEY)   ASSERT(KEY); ASSERT(LOCK.matches(KEY))
-#  define DECLARE_KEY(KEYNAME)   short  KEYNAME
-
-# else
-#  if !defined(ALLOCATOR_SYNC_LOCK)
-#   define ALLOCATOR_SYNC_LOCK
-#  endif
-#  include "util/lock.h"
-#  define CREATE_LOCK(LOCK)      create_lock(LOCK)
-#  define DESTROY_LOCK(LOCK)     destroy_lock(LOCK)
-#  define ACQUIRE_LOCK(LOCK,KEY) acquire_lock(LOCK)
-#  define RELEASE_LOCK(LOCK,KEY) release_lock(LOCK)
-#  define CHECK_LOCK(LOCK,KEY)   ((void)0)
-#  define DECLARE_KEY(KEYNAME)   ((void)0)
-
-# endif
 #else
 #  define CREATE_LOCK(LOCK)      ((void)0)
 #  define DESTROY_LOCK(LOCK)     ((void)0)
@@ -172,7 +151,7 @@ enum
 
   SZ_DIV = 4,
   SZ_MAX = N_DSPS * SZ_DIV  // if you change SZ_MAX make sure
-};                          // to update its copy in diag.h !
+};                          // to update its copy in diag.cpp !
 
 inline
 blk_t*  FRST_BLK(const grp_t* grp)
@@ -202,8 +181,8 @@ inline
 blk_t* allocator::blk_of(void* vp_cell) const
   {
     ASSERT((char*)HEAP_BASE < (char*)vp_cell);
-    unsigned d = (char*)vp_cell - (char*)HEAP_BASE;
-    unsigned bid = d / BLOCK_SIZE;
+    ptrdiff_t d = (char*)vp_cell - (char*)HEAP_BASE;
+    ptrdiff_t bid = d / BLOCK_SIZE;
     ASSERT(bid < N_BLOCKS_TOTAL);
     ASSERT(N_BDSC_BLOCKS <= bid);
     return (blk_t*)HEAP_BASE + bid;
@@ -226,12 +205,12 @@ void   commit_block(void* block)
 inline
 void   decommit_block(void* block)
   {
-    DEBUGIN(bool res =)
+    DEBUGIN(BOOL res =)
     VirtualFree(block, BLOCK_SIZE, MEM_DECOMMIT);
     ASSERT(res);
   }
 
-#if defined(UTIL_ASSERT) && !defined(NDEBUG)
+#if defined(ALLOCATOR_DEBUG)
 class Audit
 {
 		void*	const   ptr;
@@ -261,7 +240,7 @@ static bool  asserts()
   ASSERT(BLOCK_SIZE <= 0x10000); // 64K
   // or else the following check in allocate_block will go wrong
   // due to block dissalignment (see MEM_RESERVE)
-  // if ((int)free_blk % BLOCK_SIZE == 0 && free_blk == wild_blk) {
+  // if ((ptrdiff_t)free_blk % BLOCK_SIZE == 0 && free_blk == wild_blk) {
 #if defined(ALLOCATOR_ALIGN_GRPS) && defined(ALLOCATOR_SYNC_LOCK)
   ASSERT(offsetof(allocator, grps[0]) % sizeof(grp_t) == 0);
 #endif
@@ -336,10 +315,10 @@ void* allocate(allocator* alc, size_t sz)
 
   CHECK_LOCK(grp->lock, &grp_key);
 
-  if ((int)cell->next_cell < 0) {
-    ASSERT((int)cell->next_cell == -1);
+  if ((ptrdiff_t)cell->next_cell < 0) {
+    ASSERT((ptrdiff_t)cell->next_cell == -1);
     // indicates a first time allocation for this cell
-    if (0 == ((int)cell & (BLOCK_SIZE - 1))) {
+    if (0 == ((ptrdiff_t)cell & (BLOCK_SIZE - 1))) {
       ASSERT((char*)cell == alc->p_block(blk));
       blk->free_cell = 0;
     }
@@ -432,19 +411,19 @@ blk_t*  allocator::allocate_block(grp_t* grp)
 
   ACQUIRE_LOCK(free_blk_lock, &free_blk_key);
 
-  if ((int)free_blk < 0) { // the reserved space is exhausted - give up !
-    ASSERT((int)free_blk == -1);
+  if ((ptrdiff_t)free_blk < 0) { // the reserved space is exhausted - give up !
+    ASSERT((ptrdiff_t)free_blk == -1);
     RELEASE_LOCK(free_blk_lock, &free_blk_key);
     return 0; // allocator exhausted !
   }
   char* block = p_block(free_blk);
   commit_block(block);
-  if ((int)free_blk % BLOCK_SIZE == 0 && free_blk == wild_blk) {
+  if ((ptrdiff_t)free_blk % BLOCK_SIZE == 0 && free_blk == wild_blk) {
     commit_block(free_blk);
   }
 
   DEBUGIN(memset(block, 0xFE, BLOCK_SIZE));
-  const int NOMS = grp->nom_size;
+  const size_t NOMS = grp->nom_size;
   (free_blk->free_cell = (cell_t*)(block + ((BLOCK_SIZE - BLOCK_SIZE % NOMS) - NOMS)))->next_cell = (cell_t*)-1;
   ASSERT(((char*)free_blk->free_cell - block) % NOMS == 0);
 
@@ -546,7 +525,7 @@ void* allocator::operator  new(size_t)
 #endif
   if (vp == 0)
     return 0;
-  ASSERT((int)vp % BLOCK_SIZE == 0);
+  ASSERT((ptrdiff_t)vp % BLOCK_SIZE == 0);
   commit_block(vp);
   return vp;
 }
@@ -613,18 +592,13 @@ void  diag::print_allocator_params(FILE* f)
 {
   fprintf(f, "[allocator]\n"
 # ifdef ALLOCATOR_THREADSAFE
-    "\tthreadsafe, sync = "
-#  if   defined(ALLOCATOR_SYNC_CS)
-    "CS"    // sync using critical sections
-#  elif defined(ALLOCATOR_SYNC_MX)
-    "mutex" // sync using mutexes (internal implementation)
-#  else
-    "lock"  // sync using locks (internal implementation)
-#  endif
-    ";\n"
+    "\tthreadsafe = yes, sync = CRITICAL_SECTION;\n"
+# else
+    "\tthreadsafe = no;\n"
 # endif
-    "\tpages_per_block = %d, n_bdsc_blocks = %d, keep_frst_blks = %s, \n"
-    "\talign_grps = %s;\n",
+    "\tpages_per_block = %d, n_bdsc_blocks = %d;\n"
+    "\tkeep_frst_blks = %s, align_grps = %s;\n"
+    "\tdiag = %s, debug = %s;\n",
     BLOCK_SIZE/PAGE_SIZE,
     N_BDSC_BLOCKS,
 # ifdef ALLOCATOR_KEEP_FRST_BLKS
@@ -633,6 +607,16 @@ void  diag::print_allocator_params(FILE* f)
   "no",
 # endif
 # ifdef ALLOCATOR_ALIGN_GRPS
+  "yes",
+# else
+  "no",
+# endif
+# ifdef ALLOCATOR_DIAG
+  "yes",
+# else
+  "no",
+# endif
+# ifdef ALLOCATOR_DEBUG
   "yes"
 # else
   "no"

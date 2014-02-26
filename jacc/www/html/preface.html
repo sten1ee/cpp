@@ -1,0 +1,51 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="author"      content="Stanislav Jordanov">
+   <meta name="generator"   content="Mozilla/4.5 [en] (WinNT; I) [Netscape]">
+   <meta name="description" content="Introduces the Jacc C++ Parser Generator">
+   <meta name="keywords"    content="jerk0main, parser generator, compiler">
+
+   <title>The Jacc Parser Generator - Preface</title>
+</head>
+<body background="../images/backgrnd.jpg">
+<!---------------------------------------------------------------------------------------->
+<hr width="60%">
+<h1 align="center">The Jacc Parser Generator</h1>
+<hr width="60%">
+<br>
+<a href="mailto:jerk0main@yahoo.com">Stanislav Nikolaev Jordanov</a>
+<br>
+<a href="http://www.sirma.bg/">Sirma AI</a>
+<br>
+<em>December 1999</em>
+<!---------------------------------------------------------------------------------------->
+<h2>Preface</h2>
+<p>
+Parsing (syntactic analysis) is one of the best understood branches of computer science. Parsers are already being used extensively in a number of disciplines: in 
+computer science (for compiler construction, database interfaces, self-describing data-bases, artificial intelligence), in linguistics (for text analysis, corpora analysis, 
+machine translation, textual analysis of biblical texts), in document preparation and conversion, in typesetting chemical formulae and in chromosome recognition, to 
+name a few; they can be used (and perhaps are) in a far larger number of disciplines.
+<p>
+Over the past two decades a number of tools and techniques have been developed to automate the process of parser construction to the largest extent possible. It is 
+worth to note that nowadays any industrial strength programming language is accompanied by a Yacc-like parser generating tool (at least). And although C++ is one 
+of the most powerful and widely used such language today (if not the one) it is astonishing to note that the most popular parser generators used in conjunction with it 
+are 'plain' C tools like Yacc, Byacc and Bison (just to remind that this is possible due to the fact that C++ is a superset of C, so (almost) any correct C code is a 
+correct C++ code). All these tools have proven to be both reliable and efficient but this doesn't change the fact that when used with C++ they do not utilize the full 
+power of the language.
+<p>
+The present work is an attempt in this direction. It considers the design and implementation of the Jacc tool. Jacc is a general-purpose parser generator that given a 
+LALR(1) context-free grammar generates the source(s) of a C++ class that implements a parser for the language defined by the grammar. Jacc has a robust and 
+powerful semantic value type system that allows the user to benefit by the OO language environment. Another innovative feature is its customizable code generating 
+back end - the Jamp macro processor which generates the final sources based on a template file and attributes defined in the jacc grammar file. This way the user 
+has better control to the style and structure of the generated code.
+<p align="center">
+Jacc is just another compiler compiler or at least it pretends to be ...
+<br>
+<br>
+<br>
+<a href="jacc.html">[index]</a>
+
+</body>
+</html>

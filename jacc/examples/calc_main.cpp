@@ -1,8 +1,13 @@
 #include <ctype.h>
 #include <math.h>
-#include <iostream.h>
+#include <iostream>
 #include "calc_parser.h"
 #include "calc_sym.h"
+
+using std::istream;
+using std::cerr;
+using std::cin;
+using std::endl;
 
 struct calc_scanner : scanner
 {

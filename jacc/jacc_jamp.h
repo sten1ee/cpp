@@ -15,7 +15,7 @@ struct jacc_jamp : jacc_lexer
   public:  typedef jacc_property jacc_macro;
 
   public:    jacc_property_set  macros;
-  protected: ostream*           pos;
+  protected: std::ostream*      pos;
   protected: bool               del_pos;// 'del_pos' - are we supposed to delete
                                         // pos when we are getting rid of it ?
   protected: bool               expand_macros;
@@ -91,7 +91,7 @@ struct jacc_jamp : jacc_lexer
   protected: void  handle_directive(const string& directive_name);
 
   // Process the specified input stream
-  public:    void  process(istream& src_stream, const string& src_name);
+  public:    void  process(std::istream& src_stream, const string& src_name);
 };
 
 

@@ -1,7 +1,8 @@
 #ifndef lalr_print_h
 #define lalr_print_h
 
-class ostream;
+#include <iostream>
+
 class Grammar;
 class LALR_table;
 
@@ -13,8 +14,8 @@ enum { // print flags
   PF_COMPRESS_TABLE             = 0x8
 };
 
-void  print_grammar(ostream& os, Grammar& grammar);
-void  print_LALR_table(ostream& os, LALR_table& table);
+void  print_grammar(std::ostream& os, Grammar& grammar);
+void  print_LALR_table(std::ostream& os, LALR_table& table);
 void  print_setf(int pf);
 int   print_getf();
 

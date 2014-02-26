@@ -280,7 +280,7 @@ jacc_lexer::~jacc_lexer()
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  jacc_source
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-jacc_source::jacc_source(istream& src_stream, const string& src_name)
+jacc_source::jacc_source(std::istream& src_stream, const string& src_name)
   : _stream(src_stream), _name(src_name)
 {
   _location.line = _location.col = 1;

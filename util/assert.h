@@ -35,11 +35,7 @@ class __Assert
 };
 
 // called on assertion failure:
-void  __AssertFail(const char* file, unsigned line)
-#ifndef _MSC_VER
-  throw (__Assert)
-#endif
-;
+void  __AssertFail(const char* file, unsigned line) throw (__Assert);
 
 template  <class T>
 inline
