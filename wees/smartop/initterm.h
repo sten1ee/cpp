@@ -4,7 +4,6 @@
 #include "smartop.h"
 #include "parsetre.h"
 #include <string.h>
-//#include <alloc.h>
 
 void InitProTerms(void);
 Term* getTerm(TopParserNode* topNode);

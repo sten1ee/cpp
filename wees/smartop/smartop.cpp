@@ -10,7 +10,7 @@ enum {
   AnyFix  = 3,
 };
 
-const char  ProTerm::offs[4] = { 0,  2,  4,   6 };
+const short  ProTerm::offs[4] = { 0,  2,  4,   6 };
 
 ProTerm::ProTerm(const char* id)
   : id(strdup(id))

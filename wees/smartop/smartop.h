@@ -29,7 +29,8 @@ class ProTerm {
     virtual       ~ProTerm() { free(id); }
     virtual Term*  CreateInstance(void* auxdata=NULL);
 
-    int operator == (const ProTerm& pt) const { return (strcmp(id, pt.id)==0); }
+    bool operator <  (const ProTerm& pt) const { return strcmp(id, pt.id) < 0; }
+    bool operator == (const ProTerm& pt) const { return strcmp(id, pt.id) == 0; }
 
     void  AddTerm(TT tt, OPID opid, short leftFix, short rightFix);
     int   DefinedAs(TT tt);
@@ -44,7 +45,7 @@ class ProTerm {
     int   getLeftFix (int rf) const;
     int   getRightFix(int lf) const;
 
-    static  const char  offs[4];
+    static  const short  offs[4];
 
   friend class Term;
 };

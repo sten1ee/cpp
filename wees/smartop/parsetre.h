@@ -2,8 +2,7 @@
 #    define  __PARSETRE_CPP
 
 #include "smartop.h"
-#include "util/list.h"
-#include "util/listt.h"
+#include <list>
 #include <iostream>
 #include <ctype.h>
 
@@ -13,8 +12,8 @@
 #define Err_Redef  3
 
 
-typedef list< list_traits_ptr< ProTerm > >  ProTermList;
-typedef ProTermList::iterator               ProTermListIter;
+typedef std::list< ProTerm* >  ProTermList;
+typedef ProTermList::iterator  ProTermListIter;
 
 
 class ParserStream {
@@ -94,7 +93,6 @@ class TopParserNode : public ParserNode {
 
 
 int   Consult(std::istream& is, ProTermList& ptList);
-void  Order(ProTermList& inList, ProTermList& outList);
 int   ConsParserTree(TopParserNode* topNode, ProTermList& ptList);
 
 #endif

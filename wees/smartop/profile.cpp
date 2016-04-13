@@ -63,7 +63,7 @@ int ParseProfileLine(char* str, ProTermList& ptList)
 
   if (!proTerm) {
     proTerm = new ProTerm(opid);
-    ptList.add(proTerm);
+    ptList.push_back(proTerm);
   }
   TT tt = leftPrio ?
             (rightPrio ? TT_Infix : TT_Postfix) :
@@ -96,21 +96,9 @@ int  Consult(std::istream& is, ProTermList& ptList)
 }
 
 
-void  Order(ProTermList& inList, ProTermList& outList)
-{
-  while (!inList.empty()) {
-    ProTermListIter  min;
-    for (ProTermListIter pt = inList.begin(); pt != inList.end(); ++pt)
-      if (!min.initialized() || strcmp((*pt)->id, (*min)->id) < 0)
-        min = pt;
-    outList.add(*min);
-    inList.erase(min); //no delete
-  }
-}
-
-
 int ConsParserTree(TopParserNode* topNode, ProTermList& ptList)
 {
+  ptList.sort([](const ProTerm* a, const ProTerm* b) { return *a < *b; });
   for (ProTermListIter pt = ptList.begin(); pt != ptList.end(); ++pt) {
     ATRes res = topNode->AddToken((*pt)->id, *pt);
     if (res != ATOk)

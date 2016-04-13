@@ -3,6 +3,7 @@
 #include "initterm.h"
 #include <assert.h>
 #include <fstream>
+#include <algorithm>
 #include <string.h>
 #include <malloc.h>
 #include <ctype.h>
@@ -82,7 +83,7 @@ public:
   void operator = (const PI& pi) { memcpy(this, &pi, sizeof(PI)); }
 };
 
-typedef list< list_traits< PI > > PIList;
+typedef std::list< PI > PIList;
 void    PrintOn(PI& pi, std::ostream& os, PIList& pilist, int& ccol);
 
 void printSpc(std::ostream& os, int s)
@@ -104,14 +105,14 @@ void  PrintOn(PI& pi, std::ostream& os, PIList& pilist, int& ccol)
 
   switch (pi.t->getTermType()) {
     case TT_Prefix:
-      pilist.add(PI(pi.t->rightOp, pi.r+1, pi.a, pi.b));
+      pilist.push_back(PI(pi.t->rightOp, pi.r+1, pi.a, pi.b));
       break;
     case TT_Postfix:
-      pilist.add(PI(pi.t->leftOp, pi.r+1, pi.a, pi.b));
+      pilist.push_back(PI(pi.t->leftOp, pi.r+1, pi.a, pi.b));
       break;
     case TT_Infix:
-      pilist.add(PI(pi.t->leftOp,  pi.r+1, pi.a, (pi.a+pi.b)/2));
-      pilist.add(PI(pi.t->rightOp, pi.r+1, (pi.a+pi.b)/2, pi.b));
+      pilist.push_back(PI(pi.t->leftOp,  pi.r+1, pi.a, (pi.a+pi.b)/2));
+      pilist.push_back(PI(pi.t->rightOp, pi.r+1, (pi.a+pi.b)/2, pi.b));
       break;
     case TT_Term:
       break;
@@ -128,7 +129,7 @@ void  PrintTree(Term* top, std::ostream& os)
     return;
   os << '\n';
   PIList list;
-  list.add(PI(top, 1, 1, 60));
+  list.push_back(PI(top, 1, 1, 60));
   while (!list.empty()) {
     PI cp = list.front();
     list.pop_front();
@@ -204,7 +205,6 @@ int Loop(TopParserNode* topNode)
   return 1;
 }
 
-
 int main(int aa, char* arg[])
 {
   ProTermList ptList;
@@ -242,10 +242,9 @@ int main(int aa, char* arg[])
     }
     return 1;
   }
-  ProTermList ptOrdList;
+
   TopParserNode* topNode = new TopParserNode();
-  Order(ptList, ptOrdList);
-  res = ConsParserTree(topNode, ptOrdList);
+  res = ConsParserTree(topNode, ptList);
   if (res != ATOk) {
     std::cerr << "Error building parser tree. line " << (res >> 2) << "\n\t";
     switch (res & 3) {
@@ -270,7 +269,8 @@ int main(int aa, char* arg[])
   }
 
   delete topNode;
-  //ptOrdList.flush(DEL_DATA); (destructor takes care) 
+  for (ProTerm* pt : ptList)
+    delete pt;
   return 0;
 }
 
