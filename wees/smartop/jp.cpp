@@ -79,8 +79,6 @@ public:
   PI(Term* t, int r, int a, int b)
     : t(t), r(r), a(a), b(b)
   {}
-  int operator == (const PI& o) const { return 0; }
-  void operator = (const PI& pi) { memcpy(this, &pi, sizeof(PI)); }
 };
 
 typedef std::list< PI > PIList;
