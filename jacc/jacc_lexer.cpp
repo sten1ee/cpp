@@ -90,7 +90,7 @@ RESCAN:
   return 0;
 }
 
-string  jacc_lexer::read_balanced_str(int clos_c, char* escape_cs)
+string  jacc_lexer::read_balanced_str(int clos_c, const char* escape_cs)
 {
   string res;
   int open_c = cc();
@@ -132,7 +132,7 @@ string  jacc_lexer::read_balanced_str(int clos_c, char* escape_cs)
   return res;
 }
 
-string  jacc_lexer::read_str(int clos_c, char* escape_cs)
+string  jacc_lexer::read_str(int clos_c, const char* escape_cs)
 {
   string res;
   int open_c = cc();

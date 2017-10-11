@@ -100,14 +100,14 @@ class jacc_lexer : private jacc_log
         the call read_balanced_str('}') will return:
         " if (c == '{') {return 0;} " and the input left will be: "???".
     */
-    string        read_balanced_str(int clos_c, char* escape_cs="\\");
+    string        read_balanced_str(int clos_c, const char* escape_cs="\\");
     /** Reads from input till clos_c (or EOF) is reached.
         The string escape_cs contains the set of so called 'escape chars'.
         The leading open_c and trailing clos_c (although skipped)
         are not part of the result string.
         It is intended to read C-style string & character literals.
     */
-    string        read_str(int clos_c, char* escape_cs="\\");
+    string        read_str(int clos_c, const char* escape_cs="\\");
 
     // implement the jacc_log interface:
     FILE* log_file;  // error & message output stream (defaults to stderr)
