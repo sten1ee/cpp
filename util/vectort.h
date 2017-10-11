@@ -64,6 +64,12 @@ template <class DATA> class vector_traits
         return 32;
       }
 
+    enum
+      {
+        NO_INCREMENT     = -1,
+        DOUBLE_INCREMENT =  0,
+      };
+
     static  int   default_capacity_inc()
       {
         return DOUBLE_INCREMENT; // double capacity on increment !

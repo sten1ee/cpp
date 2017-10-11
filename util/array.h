@@ -31,7 +31,7 @@ template <class DATA>
 class array_ref
 {
   public:
-    typedef array_traits<DATA>           Traits;
+    typedef          array_traits<DATA>  Traits;
     typedef typename Traits::Data        Data;
     typedef typename Traits::DataIn      DataIn;
     typedef          Data*               iterator;
@@ -123,7 +123,17 @@ class array_ref
 template <class DATA>
 class array : public array_ref<DATA>
 {
-  protected:
+  public:
+    typedef array_ref<DATA>  super;
+    using typename super::Data;
+    using typename super::DataIn;
+    using typename super::Traits;
+
+protected:
+    using typename super::rep_t;
+    using super::rep;
+    using super::data;
+
     static Data*  malloc(int capacity);
     static Data*  realloc(Data* data, ptrdiff_t new_capacity);
     static void   free(Data* data);

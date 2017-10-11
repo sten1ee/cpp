@@ -12,9 +12,9 @@
 */
 template <class TRAITS> class sorted_vector : protected vector<TRAITS>
 {
-  public:
     typedef vector<TRAITS>  parent;
 
+  public:
     typedef typename parent::Traits          Traits;
     typedef typename parent::Data            Data;
     typedef typename parent::DataIn          DataIn;
@@ -50,6 +50,12 @@ template <class TRAITS> class sorted_vector : protected vector<TRAITS>
     using parent::resize;
     using parent::operator [];
 
+  protected:
+    using parent::push_back;
+    using parent::header;
+    using parent::data;
+
+  public:
     sorted_vector()
       : parent()
       {}
@@ -91,7 +97,7 @@ template <class TRAITS> class sorted_vector : protected vector<TRAITS>
 
     const parent& to_vector() const { return *this; }
 
-    class  finger : public parent::iterator
+    class  finger : public iterator
     {
       protected:
         friend class sorted_vector<Traits>;
@@ -99,6 +105,9 @@ template <class TRAITS> class sorted_vector : protected vector<TRAITS>
         finger(vector_header<Data>* header, int index)
           : iterator(header, index)
         {}
+
+        using iterator::index;
+        using iterator::header;
 
       public:
                   finger() {}

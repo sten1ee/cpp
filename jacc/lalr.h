@@ -35,8 +35,8 @@ class LR0_item
       }
     };
 
-    typedef vector< vector_traits_ptr< LR0_item > > vector;
-    typedef set< set_traits > set;
+    typedef ::vector< vector_traits_ptr< LR0_item > > vector;
+    typedef ::set< set_traits > set;
 
     FAST_ALLOC
 };
@@ -186,8 +186,8 @@ class LALR_action
           { return Term::set_traits::compare(t1, t2); }
     };
 
-    typedef vector< vector_traits_ptr< LALR_action > > vector;
-    typedef set< set_traits >  set;
+    typedef ::vector< vector_traits_ptr< LALR_action > > vector;
+    typedef ::set< set_traits >  set;
 
     FAST_ALLOC
 };
@@ -228,8 +228,8 @@ class LALR_state
         static  int     compare(DataKey p, DataKey q);
     };
 
-    typedef vector< vector_traits_ptr< LALR_state > >  vector;
-    typedef set< set_traits >  set;
+    typedef ::vector< vector_traits_ptr< LALR_state > >  vector;
+    typedef ::set< set_traits >  set;
 
     FAST_ALLOC
 };

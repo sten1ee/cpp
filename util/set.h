@@ -75,6 +75,7 @@ sortvec_traits_ptr
 #  undef  SET_OLD_VALUE
 #endif
 
+/**********************************************************************
 #define DEFINE_NAMED_SET_BY_CSTR_KEY(SET_NAME, CLASS, KEY_GETTER) \
 struct SET_NAME##_traits_ : set_traits< CLASS >\
 {\
@@ -98,5 +99,6 @@ typedef set< SET_NAME##_traits_ > SET_NAME
 
 #define DEFINE_PTR_SET_BY_CSTR_KEY(CLASS, KEY_GETTER) \
         DEFINE_NAMED_PTR_SET_BY_CSTR_KEY(set, CLASS, KEY_GETTER)
+**********************************************************************/
 
 #endif //UTIL_SET_H

@@ -31,7 +31,7 @@ struct jacc_sval
       typedef const jacc_sval&  DataOut;
     };
 
-    typedef vector< vector_traits< jacc_sval > > vector;
+    typedef ::vector< vector_traits< jacc_sval > > vector;
 };
 
 

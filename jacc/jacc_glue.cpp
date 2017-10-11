@@ -15,7 +15,7 @@ struct rhs_part {
     };
   const char* alias;   // alias for the semantic value of the symbol / action
 
-  typedef vector< vector_traits< rhs_part > >  vector;
+  typedef ::vector< vector_traits< rhs_part > >  vector;
 
   rhs_part(const rhs_part& p)
     {

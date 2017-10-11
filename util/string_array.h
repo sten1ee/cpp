@@ -9,6 +9,9 @@ class array : private String<DATA>
     typedef String<DATA>  parent;
     typedef DATA          Data;
 
+    using parent::length;
+    using parent::append;
+
   public:
     array()                           : parent()        {}
     array(const array& a)             : parent(a)       {}
@@ -27,10 +30,10 @@ class array : private String<DATA>
           iterator  end  ()       { return rep_chr + size(); }
 
 
-    int   size  () const { return parent::length(); }
-    bool  empty () const { return size() == 0;      }
+    int   size  () const { return length(); }
+    bool  empty () const { return length() == 0; }
 
-    void  push(Data d) { parent::append(d); }
+    void  push(Data d) { append(d); }
 
     const Data&  operator [](int pos) const
       {

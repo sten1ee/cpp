@@ -52,7 +52,15 @@ struct jacc_clo
       p_param = pp;
     }
 
-  DEFINE_SET_BY_CSTR_KEY(jacc_clo, name);
+  //DEFINE_SET_BY_CSTR_KEY(jacc_clo, name);
+  struct jacc_clo_traits : set_traits< jacc_clo >
+  {
+    typedef const char* DataKey;
+    static DataKey keyof(DataIn data) { return data.name; }
+    static int     compare(DataKey k1, DataKey k2) { return strcmp(k1, k2); }
+  };
+  typedef ::set< jacc_clo_traits >  set;
+
 };
 
 struct jacc_clos : jacc_clo::set

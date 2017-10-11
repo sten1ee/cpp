@@ -11,7 +11,7 @@ class msg_listener
 
     virtual void  vmessagef(const char* fmt, va_list argptr)=0;
 
-    void  messagef(char* fmt, ...)
+    void  messagef(const char* fmt, ...)
       {
         va_list  argptr;
         va_start(argptr, fmt);
@@ -19,7 +19,7 @@ class msg_listener
         va_end(argptr);
       }
 
-    void  message(char* msg)
+    void  message(const char* msg)
       {
         messagef("%s", msg);
       }

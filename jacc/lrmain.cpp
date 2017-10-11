@@ -1,12 +1,20 @@
 #include "lalr.h"
 #include "lalr_print.h"
 #include "lalr_read.h"
-#include <fstream.h>
+#include <fstream>
+
+using std::ostream;
+using std::istream;
+using std::ofstream;
+using std::ifstream;
+using std::cin;
+using std::cout;
+using std::cerr;
 
 // ----------------------------------------------------------------------------
 // $ main
 
-void  LR_main(int na, char** arg)
+int  LR_main(int na, char** arg)
 {
   ofstream fout;
   string   out_name  = "stdout";
@@ -27,16 +35,16 @@ void  LR_main(int na, char** arg)
     if (strcmp(arg[i], "-i") == 0) {
       if (redir_in) {
         cerr << "\nWarning: Duplicate cmd line option: -i ! (ignored)";
-        return;
+        return -1;
       }
       if (++i == na) {
         cerr << "\nError: Missing input file name after -i option !";
-        return;
+        return -1;
       }
       fin.open(arg[i]);
       if (!fin) {
         cerr << "\nError: Unable to open input file '" << arg[i] << "' !";
-        return;
+        return -1;
       }
       redir_in = true;
       in_name  = arg[i];
@@ -45,17 +53,17 @@ void  LR_main(int na, char** arg)
     // -- redir output :
     if (strcmp(arg[i], "-o") == 0) {
       if (redir_out) {
-        cerr << "\nWarning: Duplicate cmd line opttion: -o ! (ignored)";
-        return;
+        cerr << "\nError: Duplicate cmd line opttion: -o !";
+        return -1;
       }
       if (++i == na) {
         cerr << "\nError: Missing output file name after -o option !";
-        return;
+        return -1;
       }
       fout.open(arg[i]);
       if (!fout) {
         cerr << "\nError: Unable to open output file '" << arg[i] << "' !";
-        return;
+        return -1;
       }
       redir_out = true;
       out_name  = arg[i];
@@ -125,7 +133,7 @@ void  LR_main(int na, char** arg)
       "F -> num\n"
       "F -> ( E )\n"
       "~";
-      return;
+      return 0;
     }
     // -- print help on command line options:
     if (strcmp(arg[i], "-h") == 0) {
@@ -145,7 +153,7 @@ void  LR_main(int na, char** arg)
       "\t-hi                   - print help on input file format and exit\n"
       "\t-h                    - print this help message to stdout and exit\n"
       ;
-      return;
+      return 0;
     }
     // -- unknow parameter/option :
     if (arg[i][0] == '-') {
@@ -155,30 +163,26 @@ void  LR_main(int na, char** arg)
       cerr << "\nError: unknown command line parameter: " << arg[i] << " !";
     }
     cerr << "\nRun with command line option -h to get help";
-    return;
+    return -1;
   }
 
   if (!opt_quiet) {
     cout << "LR - a prototype of LR1/LALR1 parser generator\n"
             "Run with command line option -h to a get brief help\n"
-            "Author   : Stanislav Jordanov <stenly@sirma.bg400.bg>\n"
-            "Copyleft : jerk0main 1998\n"
+            "Author   : Stanislav Jordanov <stanislav.jordanov@gmail.com>\n"
+            "Copyleft : jerk0main 1998, 2017\n"
             "input  is: " << in_name.c_str()  << "\n"
             "output is: " << out_name.c_str() << "\n\n";
   }
 
   ostream& os = redir_out ? (ostream&)fout : (ostream&)cout;
   istream& is = redir_in  ? (istream&)fin  : (istream&)cin;
-  ostream& erros = cerr;
+  ostream& erros = (ostream&)cerr;
 
   Grammar grammar;
   read_grammar(is, grammar, erros);
   grammar.prepare();
 
-  if (opt_yacc_exp) {
-    //yacc_export(os, grammar);
-    return;
-  }
   if (opt_print_grammar) {
     print_grammar(os, grammar);
   }
@@ -193,13 +197,17 @@ void  LR_main(int na, char** arg)
     }
     print_LALR_table(os, lalr_table);
   }
+
+  return 0;
 }
 
+/*****
 #ifdef __BORLANDC__
-void  __cdecl main(int na, char** arg)
+int  __cdecl main(int na, char** arg)
 #else
-void          main(int na, char** arg)
+int          main(int na, char** arg)
 #endif
 {
-  LR_main(na, arg);
+  return LR_main(na, arg);
 }
+*****/

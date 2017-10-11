@@ -23,9 +23,11 @@ const bool    DEL_DATA  = true;
 #if   UINT_MAX == 0xffffffffUL
 typedef unsigned      uint32;
 typedef int            int32;
+#ifndef  UINT32_MAX
 # define UINT32_MAX   UINT_MAX
 # define  INT32_MAX    INT_MAX
 # define  INT32_MIN    INT_MIN
+#endif
 #elif ULONG_MAX == 0xffffffffUL
 typedef unsigned long uint32;
 typedef long           int32;

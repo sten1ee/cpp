@@ -55,7 +55,8 @@ void  LALR_table::make_closure(LALR_state* state)
     for (Term::prods_iterator pi = x->prods_begin(), end = x->prods_end();
                               pi != end; ++pi) {
       Prod* p = *pi;
-      LR0_item::set::finger f = non_core_items.find(&LR0_item(p, 0));
+      LR0_item temp(p, 0);
+      LR0_item::set::finger f = non_core_items.find(&temp);
       LALR_item* x_item;
       if (!f) {
         x_item = new LALR_item(p, 0);

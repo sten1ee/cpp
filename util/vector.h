@@ -12,8 +12,6 @@
 #include "util/vectort.h"
 
 
-const int   NO_INCREMENT     = -1;
-const int   DOUBLE_INCREMENT =  0;
 
 
 template  <class DATA>
@@ -148,6 +146,9 @@ template <class TRAITS> class vector
         iterator(vector_header<Data>* _header, int _index)
             : const_iterator(_header, _index)
           {}
+
+        using const_iterator::header;
+        using const_iterator::index;
 
       public:
         iterator()

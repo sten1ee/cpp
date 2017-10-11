@@ -5,6 +5,6 @@
 // explicit template instantiation:
 template class String< char >;
 //template class custom_allocator< 20 >;
-template class String< Term* >;
-template class String< Prod* >;
+//template class String< Term* >;
+//template class String< Prod* >;
 

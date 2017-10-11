@@ -32,8 +32,24 @@ struct jacc_symtype
   static kind_t  kind_for(const char* type_name, const char* value_type);
   bool   is_identical_with(const jacc_symtype& other) const;
 
-  DEFINE_NAMED_PTR_SET_BY_CSTR_KEY(named_set, jacc_symtype, type_name);
-  DEFINE_NAMED_PTR_SET_BY_CSTR_KEY(value_set, jacc_symtype, value_type);
+  //DEFINE_NAMED_PTR_SET_BY_CSTR_KEY(named_set, jacc_symtype, type_name);
+  //DEFINE_NAMED_PTR_SET_BY_CSTR_KEY(value_set, jacc_symtype, value_type);
+
+  struct named_set_traits : set_traits_ptr< jacc_symtype >
+  {
+    typedef const char* DataKey;
+    static DataKey keyof(DataIn data) { return data->type_name; }
+    static int     compare(DataKey k1, DataKey k2) { return strcmp(k1, k2); }
+  };
+  typedef set<named_set_traits>  named_set;
+
+  struct value_set_traits : set_traits_ptr< jacc_symtype >
+  {
+      typedef const char* DataKey;
+      static DataKey keyof(DataIn data) { return data->value_type; }
+      static int     compare(DataKey k1, DataKey k2) { return strcmp(k1, k2); }
+  };
+  typedef set<value_set_traits>  value_set;
 
   void  render_stack_decl (std::ostream& out, const jacc_tab& tab,
                                               const jacc_sval& sval, int sidx,

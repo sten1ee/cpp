@@ -80,7 +80,15 @@ public:
       _str_val = sv;
     }
 
-  DEFINE_SET_BY_CSTR_KEY(jacc_property, key());
+  //DEFINE_SET_BY_CSTR_KEY(jacc_property, key());
+  struct jacc_property_traits : set_traits< jacc_property >
+  {
+    typedef const char* DataKey;
+    static DataKey keyof(DataIn data) { return data.key(); }
+    static int     compare(DataKey k1, DataKey k2) { return strcmp(k1, k2); }
+  };
+  typedef ::set< jacc_property_traits >  set;
+
 };
 
 /** A property set contains no duplicate keys */

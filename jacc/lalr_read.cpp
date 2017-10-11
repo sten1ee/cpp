@@ -1,5 +1,7 @@
 #include "lalr.h"
 #include <ctype.h>
+#include <iostream>
+
 // ----------------------------------------------------------------------------
 // $ read grammar
 
@@ -74,7 +76,7 @@ RP_ERR  read_prod(const char* line, Grammar& grammar)
 }
 
 
-bool  read_grammar(istream& is, Grammar& grammar, ostream& erros)
+bool  read_grammar(std::istream& is, Grammar& grammar, std::ostream& erros)
 {
   char  line_buf[256];
   int   line_no = 0;

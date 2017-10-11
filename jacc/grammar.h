@@ -24,7 +24,7 @@ class Term
 
   protected:
     friend class Grammar;
-    array< Prod* >   _prods;
+    ::array< Prod* >   _prods;
 
   public:
     typedef array< Prod* >::iterator         prods_iterator;
@@ -39,15 +39,15 @@ class Term
     bool  operator == (const Term& t) const { return this == &t; }
     bool  operator <  (const Term& t) const { return id < t.id;  }
 
-    typedef vector< vector_traits_ptr< Term > >  vector;
+    typedef ::vector< ::vector_traits_ptr< Term > >  vector;
 
     struct set_traits : set_traits_ptr< Term >
     {
       static int compare(const Term* i, const Term* j)
         { return i->id - j->id; }
     };
-    typedef set< set_traits >  set;
-    typedef array< Term* >     array;
+    typedef ::set< set_traits >  set;
+    typedef ::array< Term* >     array;
 
     Term::set     first_set;
 
@@ -79,9 +79,8 @@ class Prod
       public: static int compare(const Prod* i, const Prod* j)
         { return i->id - j->id; }
     };
-    typedef  vector< vector_traits_ptr< Prod > > vector;
-    typedef  set< ProdTraits >  set;
-    typedef  array< Prod* >     array;
+    typedef  ::vector< vector_traits_ptr< Prod > > vector;
+    typedef  ::set< ProdTraits >  set;
 
     virtual  ~Prod() {}
               Prod(Term* lhs_term, Term::array& rhs_terms);

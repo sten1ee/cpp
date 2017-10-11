@@ -132,7 +132,7 @@ void  Grammar::add_prod(Prod* prod)
   prod->id = prods.size();
   prods.push(prod);
   prod->lhs_term->_prods.push(prod);
-  _max_rhs_size = max(_max_rhs_size, prod->rhs_terms.size());
+  _max_rhs_size = max(_max_rhs_size, (int)prod->rhs_terms.size());
 }
 
 
