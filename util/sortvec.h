@@ -15,6 +15,7 @@ template <class TRAITS> class sorted_vector : protected vector<TRAITS>
     typedef vector<TRAITS>  parent;
 
   public:
+    /***
     typedef typename parent::Traits          Traits;
     typedef typename parent::Data            Data;
     typedef typename parent::DataIn          DataIn;
@@ -22,8 +23,17 @@ template <class TRAITS> class sorted_vector : protected vector<TRAITS>
     typedef typename parent::const_iterator  const_iterator;
     typedef typename parent::copy_tag        copy_tag;
     typedef typename parent::alias_tag       alias_tag;
-
+    ***/
+    using   typename parent::Traits;
+    using   typename parent::Data;
+    using   typename parent::DataIn;
     typedef typename Traits::DataKey DataKey;
+
+    using typename parent::iterator;
+    using typename parent::const_iterator;
+    using typename parent::copy_tag;
+    using typename parent::alias_tag;
+
     
     using parent::COPY;
     using parent::ALIAS;
