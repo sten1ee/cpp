@@ -15,7 +15,8 @@ public:
   generic_stack(int init_size=DEFAULT_INIT_SIZE)
     {
       base = (T*)ALLOCATOR().malloc(init_size * sizeof(T));
-      end = (top = base) + init_size;
+      top = base;
+      end = base + init_size;
     }
 
   ~generic_stack()
@@ -30,7 +31,7 @@ public:
       if (base != new_base)
         {
           top  = new_base + (top - base);
-          end  = new_base + (end - base);
+          end  = new_base + new_size;
           base = new_base;
         }
     }
