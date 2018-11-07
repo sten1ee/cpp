@@ -4,20 +4,22 @@ class generic_stack<T>
   int  top;
   int  end;
 
-public:
 
-  enum { DEFAULT_INIT_SIZE = 128 };
-
-  generic_stack(int init_size=DEFAULT_INIT_SIZE)
+  generic_stack(int init_size)
     {
-      base = new T[init_size];
+      base = (T[]) new Object[init_size];
       end = (top = 0) + init_size;
+    }
+
+  generic_stack()
+    {
+      this(128); //default init size
     }
 
   void  grow()
     {
-      int new_size = 2 * (end - base);
-      T[] new_base = new T[new_size];
+      int new_size = 2 * end;
+      T[] new_base = (T[]) new Object[new_size];
       System.arraycopy(base, 0, new_base, 0, new_size);
       base = new_base;
       end  = new_size;
@@ -43,12 +45,12 @@ public:
       top -= n;
     }
 
-  int  size() const
+  int  size()
     {
       return top;
     }
 
-  bool  empty() const
+  boolean  empty()
     {
       return top == 0;
     }
@@ -69,9 +71,10 @@ public:
       assert(top > 0);
       return base[top-1];
     }
-
+/*
   T* top_ptr()
     {
       return top;
     }
+*/
 }
