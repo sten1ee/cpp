@@ -71,10 +71,10 @@ class generic_stack<T>
       assert(top > 0);
       return base[top-1];
     }
-/*
-  T* top_ptr()
+
+  T  top_ptr()
     {
-      return top;
+      assert(top != end);
+      return base[top];
     }
-*/
 }
