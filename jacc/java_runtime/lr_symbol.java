@@ -24,8 +24,8 @@ public class lr_symbol
   public  int   left;  // is the left position in the original input file
   public  int   right; // is the right position in the original input file
 
-  public  int   get_sym()         const { return sym; }
-  public  int   get_parse_state() const { return parse_state; }
+  public  int   get_sym()         /*const*/ { return sym; }
+  public  int   get_parse_state() /*const*/ { return parse_state; }
 
 
   private boolean  init()

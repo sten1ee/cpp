@@ -272,7 +272,7 @@ public abstract class lr_parser
   /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 
   /** Direct reference to the reduce-goto table. */
-  protected final short reduce_tab;
+  protected final short[][] reduce_tab;
 
   /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 
@@ -456,18 +456,15 @@ public abstract class lr_parser
    */
   protected final short get_action(int state, int sym)
     {
-      short   tag;
-      int     first, last, probe;
-      short*  row = action_tab[state];
-
-#define LENGTH(ARR) ((ARR)[-1])
+      final short[] row = action_tab[state];
+      final int     row_len = row[0];
 
       /* linear search if we are < 10 entries */
-      if (LENGTH(row) < 20)
-        for (probe = 0; probe < LENGTH(row); probe++)
+      if (row_len < 20)
+        for (probe = 1; probe <= row_len; probe++)
           {
             /* is this entry labeled with our Symbol or the default? */
-            tag = row[probe++];
+            short tag = row[probe++];
             if (tag == sym || tag == -1)
               {
                 /* return the next entry */
@@ -477,21 +474,21 @@ public abstract class lr_parser
       /* otherwise binary search */
       else
         {
-          first = 0;
-          last  = (LENGTH(row)-1)/2 - 1;  // leave out trailing default entry
+          int first = 0;
+          int last  = (row_len-1)/2 - 1;  // leave out trailing default entry
           while (first <= last)
             {
               probe = (first+last)/2;
-              if (sym == row[probe*2])
-                return row[probe*2+1];
-              else if (sym > row[probe*2])
+              if (sym == row[1 + probe*2])
+                return row[2 + probe*2];
+              else if (sym > row[1 + probe*2])
                 first = probe+1;
               else
                 last = probe-1;
             }
 
           /* not found, use the default at the end */
-          return row[LENGTH(row)-1];
+          return row[row_len];
         }
 
       // shouldn't happened, but if we run off the end we return the
@@ -514,8 +511,8 @@ public abstract class lr_parser
    */
   protected final short get_reduce(int state, int sym)
     {
-      short  tag;
-      short* row = reduce_tab[state];
+      final short[] row = reduce_tab[state];
+      final int     row_len = row[0];      
 
       /* if we have a null row we go with the default */
       if (row == 0)
@@ -523,10 +520,10 @@ public abstract class lr_parser
           assert(row != 0);
           return -1;
         }
-      for (int probe = 0; probe < LENGTH(row); probe++)
+      for (int probe = 1; probe <= row_len; probe++)
         {
           /* is this entry labeled with our Symbol or the default? */
-          tag = row[probe++];
+          short tag = row[probe++];
           if (tag == sym || tag == -1)
             {
               /* return the next entry */
@@ -564,8 +561,8 @@ public abstract class lr_parser
 
       /* push dummy symbol with start state to get us underway */
       stack.remove_all_elements();
-      lr_symbol dummy_sym(0, start_state());
-      stack.push(&dummy_sym);
+      lr_symbol dummy_sym = new lr_symbol(0, start_state());
+      stack.push(dummy_sym);
 
       /* continue until accept or fatal error */
       while (true)
@@ -654,7 +651,7 @@ public abstract class lr_parser
   /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 
   /** Dump the parse stack for debugging purposes. */
-  public void dump_stack();
+  public void dump_stack() {;}
 
   /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 
@@ -664,7 +661,7 @@ public abstract class lr_parser
    * @param nt_num    the index of the LHS non terminal.
    * @param rhs_size  the size of the RHS.
    */
-  public void debug_reduce(int prod_num, int nt_num, int rhs_size);
+  public void debug_reduce(int prod_num, int nt_num, int rhs_size) {;}
 
   /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 
@@ -672,13 +669,13 @@ public abstract class lr_parser
    *
    * @param shift_tkn the Symbol being shifted onto the stack.
    */
-  public void debug_shift(const lr_symbol shift_tkn);
+  public void debug_shift(lr_symbol shift_tkn) {;}
 
   /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 
   /** Do debug output for stack state. [CSA]
    */
-  public void debug_stack();
+  public void debug_stack() {;}
 
   /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 
@@ -784,10 +781,11 @@ public abstract class lr_parser
       /*-----------------------------------------------------------*/
 
       /** Constructor to build a virtual stack out of a real stack. */
-      public virtual_stack(generic_stack<lr_symbol>&
+      public virtual_stack(generic_stack<lr_symbol>
                            shadowing_stack)
-        : real_stack(shadowing_stack), real_next(0)
         {
+          this.real_stack = shadowing_stack;
+          this.real_next = 0;
           /* get one element onto the virtual portion of the stack */
           get_from_real();
         }
@@ -800,7 +798,7 @@ public abstract class lr_parser
        *  the bottom of the virtual portion of the stack, but is always left
        *  unmodified.
        */
-      protected generic_stack<lr_symbol>& real_stack;
+      protected generic_stack<lr_symbol> real_stack;
 
       /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 
@@ -819,7 +817,7 @@ public abstract class lr_parser
        *  becomes empty we transfer elements from the underlying stack onto
        *  this stack.
        */
-      protected generic_stack<int>  vstack;
+      protected generic_stack<Integer>  vstack;
 
       /*-----------------------------------------------------------*/
       /*--- General Methods ---------------------------------------*/
@@ -830,14 +828,12 @@ public abstract class lr_parser
        */
       protected void get_from_real()
         {
-          lr_symbol* stack_sym;
-
           /* don't transfer if the real stack is empty */
           if (real_next >= real_stack.size())
             return;
 
           /* get a copy of the first symbol we have not transfered */
-          stack_sym = real_stack.element_at(real_stack.size()-1-real_next);
+          lr_symbol stack_sym = real_stack.element_at(real_stack.size()-1-real_next);
 
           /* record the transfer */
           real_next++;
@@ -903,7 +899,7 @@ public abstract class lr_parser
   /** The number of Symbols after an error we much match to consider it
    *  recovered from.
    */
-  protected /*virtual*/ int  error_sync_size() const { return _error_sync_size; }
+  protected /*virtual*/ int  error_sync_size() /*const*/ { return _error_sync_size; }
 
   /** Set the number of Symbols after an error we must match to consider it
    *  recovered from.
@@ -976,10 +972,10 @@ public abstract class lr_parser
 
   /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 
-  enum { MAX_ERROR_SYNC_SIZE = 8 };
+  final int  MAX_ERROR_SYNC_SIZE = 8 ;
 
   /** Lookahead Symbols used for attempting error recovery "parse aheads". */
-  protected lr_symbol  lookahead[MAX_ERROR_SYNC_SIZE];
+  protected lr_symbol[] lookahead = new lr_symbol[MAX_ERROR_SYNC_SIZE];
 
   /** Position in lookahead input buffer used for "parse ahead". */
   protected int   lookahead_pos;
@@ -998,8 +994,9 @@ public abstract class lr_parser
    */
   protected void read_lookahead()
     {
-      const int ess = error_sync_size(), eof_sym = EOF_sym();
-      assert(ess <= sizeof(lookahead) / sizeof(*lookahead));
+      final int  ess = error_sync_size();
+      final int  eof_sym = EOF_sym();
+      assert(ess <= lookahead.length);
 
       got_eof = false;
       lr_symbol ctok = cur_token;
@@ -1057,7 +1054,7 @@ public abstract class lr_parser
       /* read a new symbol into the last spot */
       if (!got_eof)
         {
-          lr_symbol* ctok = lookahead[lookahead_len-1] = scan();
+          lr_symbol ctok = lookahead[lookahead_len-1] = scan();
           if (ctok.sym == EOF_sym())
             got_eof = true;
         }
@@ -1073,7 +1070,7 @@ public abstract class lr_parser
   /** Gives the derived class a chance to destroy symbols popped during
    *  error recovery stack unwind.
    */
-  protected virtual void dispose_of(lr_symbol* sym) { delete sym; }
+  protected /*virtual*/ void dispose_of(lr_symbol sym) { /*delete sym;*/ }
 
   /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 
@@ -1084,10 +1081,10 @@ public abstract class lr_parser
    *  parse() using only our saved "parse ahead" input, and not executing any
    *  actions.
    */
-  protected bool try_parse_ahead()
+  protected boolean try_parse_ahead()
     {
       /* create a virtual stack from the real parse stack */
-      virtual_stack  vstack(stack);
+      virtual_stack  vstack = new virtual_stack(stack);
 
       /* parse until we fail or get past the lookahead input */
       while (true)
