@@ -151,13 +151,14 @@ public abstract class lr_parser
        *  subclass).  Actions are indexed by an internal action number assigned
        *  at parser generation time.
        *
-       * @param act       the internal index of the action to be performed.
-       * @param parser    the parser object we are acting for.
-       * @param stack_top the parser's stack top.
+       * @param act     the internal index of the action to be performed.
+       * @param parser  the parser object we are acting for.
+       * @param stack   the parser's stack (access like this:
+       *                                    stack.top(-1), stack.top(-2) ... )
        */
-      public lr_symbol  do_action(int        act,
-                                  lr_parser  parser,
-                                  lr_symbol  stack_top);
+      public lr_symbol  do_action(int                       act,
+                                  lr_parser                 parser,
+                                  generic_stack<lr_symbol>  stack);
     };
 
   /** Each production entry has two parts, the index of the non-terminal on
@@ -305,7 +306,7 @@ public abstract class lr_parser
 
   protected final lr_symbol  do_action(int act)
     {
-      return _action_executor.do_action(act, this, stack.top_ptr());
+      return _action_executor.do_action(act, this, stack);
     }
 
   /**
