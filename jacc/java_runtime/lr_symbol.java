@@ -19,7 +19,7 @@
 public class lr_symbol
 {
   public  int   sym;
-  private int   parse_state;
+          int   parse_state;
 
   public  int   left;  // is the left position in the original input file
   public  int   right; // is the right position in the original input file
@@ -38,7 +38,7 @@ public class lr_symbol
     }
 
 
-  private lr_symbol(int s, int state)
+  lr_symbol(int s, int state)
     {
       assert init();
 

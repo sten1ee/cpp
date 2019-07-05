@@ -461,10 +461,10 @@ public abstract class lr_parser
 
       /* linear search if we are < 10 entries */
       if (row_len < 20)
-        for (probe = 1; probe <= row_len; probe++)
+        for (int probe = 1; probe <= row_len; probe++)
           {
             /* is this entry labeled with our Symbol or the default? */
-            short tag = row[probe++];
+            int tag = row[probe++];
             if (tag == sym || tag == -1)
               {
                 /* return the next entry */
@@ -478,7 +478,7 @@ public abstract class lr_parser
           int last  = (row_len-1)/2 - 1;  // leave out trailing default entry
           while (first <= last)
             {
-              probe = (first+last)/2;
+              int probe = (first+last)/2;
               if (sym == row[1 + probe*2])
                 return row[2 + probe*2];
               else if (sym > row[1 + probe*2])
@@ -514,16 +514,10 @@ public abstract class lr_parser
       final short[] row = reduce_tab[state];
       final int     row_len = row[0];      
 
-      /* if we have a null row we go with the default */
-      if (row == 0)
-        {
-          assert(row != 0);
-          return -1;
-        }
       for (int probe = 1; probe <= row_len; probe++)
         {
           /* is this entry labeled with our Symbol or the default? */
-          short tag = row[probe++];
+          int tag = row[probe++];
           if (tag == sym || tag == -1)
             {
               /* return the next entry */
@@ -531,7 +525,6 @@ public abstract class lr_parser
             }
         }
       /* if we run off the end we return the default (error == -1) */
-      assert(row != 0);
       return -1;
     }
 
@@ -597,10 +590,10 @@ public abstract class lr_parser
               assert Log("Reduce by rule " + act);
 
               /* perform the action for the reduce */
-              lr_symbol* lhs_sym = do_action(act);
+              lr_symbol lhs_sym = do_action(act);
 
               /* check for accept indication */
-              if (lhs_sym == 0)
+              if (lhs_sym == null)
                 {
                   return stack.peek();
                 }
@@ -608,7 +601,7 @@ public abstract class lr_parser
               /* look up information about the production */
 
               lhs_sym.sym       = production_tab[act].lhs_sym;
-              short handle_size = production_tab[act].rhs_size;
+              int handle_size = production_tab[act].rhs_size;
 
               /* pop the handle off the stack */
               stack.npop(handle_size);
@@ -633,16 +626,16 @@ public abstract class lr_parser
               /* try to error recover */
               switch (error_recovery())
                 {
-                case ERS_FAIL:
+                case FAIL:
                   /* if that fails give up with a fatal syntax error */
                   unrecovered_syntax_error(cur_token);
-                  return 0;
-                case ERS_SUCCESS:
+                  return null;
+                case SUCCESS:
                   break;
-                case ERS_ACCEPT:
+                case ACCEPT:
                   return stack.peek();
                 default:
-                  assert(0);
+                  assert(false);
                 }
             }
         }
@@ -680,10 +673,10 @@ public abstract class lr_parser
   /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 
   /** Error recovery status enum */
-  protected enum ers_t {
-    ERS_FAIL,
-    ERS_SUCCESS,
-    ERS_ACCEPT
+  protected enum ERS {
+    FAIL,
+    SUCCESS,
+    ACCEPT
   };
 
   /** Attempt to recover from a syntax error.  This returns false if recovery
@@ -706,7 +699,7 @@ public abstract class lr_parser
    *  configuration and executing all actions.  Finally, we return the the
    *  normal parser to continue with the overall parse.
    */
-  protected ers_t  error_recovery()
+  protected ERS  error_recovery()
     {
       assert Log("# Attempting error recovery");
 
@@ -715,7 +708,7 @@ public abstract class lr_parser
       if (!find_recovery_config())
         {
           assert Log("# Error recovery fails");
-          return ERS_FAIL;
+          return ERS.FAIL;
         }
 
       /* read ahead to create lookahead we can parse multiple times */
@@ -740,7 +733,7 @@ public abstract class lr_parser
             {
               assert(lookahead_len == 0);
               assert Log("# Error recovery fails at EOF");
-              return ERS_FAIL;
+              return ERS.FAIL;
             }
         }
 
@@ -748,7 +741,7 @@ public abstract class lr_parser
       assert Log("# Parse-ahead ok, going back to normal parse");
 
       /* do the real parse (including actions) across the lookahead.
-         this call will return either ERS_SUCCESS or ERS_ACCEPT */
+         this call will return either ERS.SUCCESS or ERS.ACCEPT */
       return parse_lookahead();
     }
 
@@ -845,7 +838,7 @@ public abstract class lr_parser
       /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 
       /** Indicate whether the stack is empty. */
-      public bool empty()
+      public boolean empty()
         {
           /* if vstack is empty then we were unable to transfer onto it and
              the whole thing is empty. */
@@ -911,7 +904,7 @@ public abstract class lr_parser
   /** Determine if we can shift under the special error symbol out of the
    *  state currently on the top of the (real) parse stack.
    */
-  protected bool shift_under_error()
+  protected boolean shift_under_error()
     {
       /* is there a shift under error symbol */
       return get_action(stack.peek().parse_state, error_sym()) > 0;
@@ -924,7 +917,7 @@ public abstract class lr_parser
    *  error symbol, then doing the shift.  If no suitable state exists on
    *  the stack we return false
    */
-  protected bool find_recovery_config()
+  protected boolean find_recovery_config()
     {
       lr_symbol error_token;
       int act;
@@ -985,7 +978,7 @@ public abstract class lr_parser
 
   /** When the EOF token is received for first time this flag is set to
       prevent furher calls to scanner */
-  protected bool  got_eof;
+  protected boolean  got_eof;
 
   /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .*/
 
@@ -1000,7 +993,7 @@ public abstract class lr_parser
 
       got_eof = false;
       lr_symbol ctok = cur_token;
-      cur_token = 0;
+      cur_token = null;
       /* fill in the array */
       int i = 0;
       while (true)
@@ -1032,7 +1025,7 @@ public abstract class lr_parser
   /** Advance to next "parse ahead" input symbol. Return true if we have
    *  input to advance to, false otherwise.
    */
-  protected bool advance_lookahead()
+  protected boolean advance_lookahead()
     {
       /* advance the input location  &
          return true if we didn't go off the end */
@@ -1120,8 +1113,8 @@ public abstract class lr_parser
                 }
 
               /* get the lhs symbol and the rhs size */
-              short lhs      = production_tab[(-act)-1].lhs_sym;
-              short rhs_size = production_tab[(-act)-1].rhs_size;
+              int lhs      = production_tab[(-act)-1].lhs_sym;
+              int rhs_size = production_tab[(-act)-1].rhs_size;
 
               /* pop handle off the stack */
               for (int i = 0; i < rhs_size; i++)
@@ -1149,9 +1142,9 @@ public abstract class lr_parser
    *  parser performs all actions and modifies the real parse configuration.
    *  This returns once we have consumed all the stored input or we accept.
    *
-   * @return  ERS_SUCCESS or ERS_FAIL
+   * @return  ERS.SUCCESS or ERS.FAIL
    */
-  protected ers_t  parse_lookahead()
+  protected ERS  parse_lookahead()
     {
       /* restart the saved input at the beginning */
       lookahead_pos = 0;
@@ -1189,7 +1182,7 @@ public abstract class lr_parser
                   cur_token = scan();
 
                   /* go back to normal parser */
-                  return ERS_SUCCESS;
+                  return ERS.SUCCESS;
                 }
 
               assert Log("# Current symbol is #" + cur_err_token().sym);
@@ -1198,16 +1191,16 @@ public abstract class lr_parser
           else if (act < 0)
             {
               /* perform the action for the reduce */
-              lr_symbol* lhs_sym = do_action((-act)-1);
+              lr_symbol lhs_sym = do_action((-act)-1);
 
-              if (lhs_sym == 0)
+              if (lhs_sym == null)
                 {
-                  return ERS_ACCEPT;
+                  return ERS.ACCEPT;
                 }
 
               /* look up information about the production */
               lhs_sym.sym      = production_tab[(-act)-1].lhs_sym;
-              short handle_size = production_tab[(-act)-1].rhs_size;
+              int handle_size = production_tab[(-act)-1].rhs_size;
 
               // if (debug) debug_reduce((-act)-1, lhs_sym.sym, handle_size);
 
