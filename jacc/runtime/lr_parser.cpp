@@ -107,7 +107,6 @@ short lr_parser::get_reduce(int state, int sym)
   /* if we have a null row we go with the default */
   if (row == 0)
     {
-      assert(row != 0);
       return -1;
     }
   for (int probe = 0; probe < LENGTH(row); probe++)
@@ -121,7 +120,6 @@ short lr_parser::get_reduce(int state, int sym)
         }
     }
   /* if we run off the end we return the default (error == -1) */
-  assert(row != 0);
   return -1;
 }
 

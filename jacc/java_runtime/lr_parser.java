@@ -454,7 +454,7 @@ public abstract class lr_parser
    * @param state the state index of the action being accessed.
    * @param sym   the Symbol index of the action being accessed.
    */
-  protected final short get_action(int state, int sym)
+  protected final int  get_action(int state, int sym)
     {
       final short[] row = action_tab[state];
       final int     row_len = row[0];
@@ -509,10 +509,17 @@ public abstract class lr_parser
    * @param state the state index of the entry being accessed.
    * @param sym   the Symbol index of the entry being accessed.
    */
-  protected final short get_reduce(int state, int sym)
+  protected final int  get_reduce(int state, int sym)
     {
       final short[] row = reduce_tab[state];
-      final int     row_len = row[0];      
+
+      /* if we have a null row we go with the default */
+      if (row == null)
+        {
+          return -1;
+        }
+    
+      final int  row_len = row[0];      
 
       for (int probe = 1; probe <= row_len; probe++)
         {
@@ -524,6 +531,7 @@ public abstract class lr_parser
               return row[probe];
             }
         }
+
       /* if we run off the end we return the default (error == -1) */
       return -1;
     }
