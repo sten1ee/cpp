@@ -151,10 +151,7 @@ void  _set_operation(SO so,
         if (diff < 0) goto ADD_SET1_ELEMENT;
         break;
 
-      case SO_OR: goto ADD_LESS_ELEMENT;
-
-      default:
-        //unknown set operation ?!
+      case SO_OR:
       ADD_LESS_ELEMENT:
         if (diff <= 0) {
           ADD_SET1_ELEMENT:
@@ -174,12 +171,15 @@ void  _set_operation(SO so,
         res->insert_back(*i2);
         ++i2;
       }
-
+      // break missing intentionally!
     case SO_DIFF:
       while (i1 != end1) {
         res->insert_back(*i1);
         ++i1;
       }
+
+    case SO_AND:
+      ;
   }
 }
 
