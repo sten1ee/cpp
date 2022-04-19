@@ -167,13 +167,13 @@ struct jacc : jacc_jamp
     // The parse method resides in jacc_glue.cpp
     void  parse_grammar(std::istream& grm_file, const char* grm_file_name);
 
-    void  render_action_table(std::ostream& out);
-    void  render_reduce_table(std::ostream& out);
-    void  render_production_table(std::ostream& out);
-    void  render_do_action(std::ostream& out);
-    void  render_delete_table(std::ostream& out);
-    void  render_symtype_enum(std::ostream& out);
-    void  render_symtype_defs(std::ostream& out);
+    virtual void  render_action_table(std::ostream& out);
+    virtual void  render_reduce_table(std::ostream& out);
+    virtual void  render_production_table(std::ostream& out);
+    virtual void  render_do_action(std::ostream& out);
+    virtual void  render_delete_table(std::ostream& out);
+    virtual void  render_symtype_enum(std::ostream& out);
+    virtual void  render_symtype_defs(std::ostream& out);
 
     // method inherited from class jacc_jamp:
     virtual bool  try_handle_directive(const string& directive_name);

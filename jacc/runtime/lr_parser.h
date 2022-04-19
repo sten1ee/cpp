@@ -110,7 +110,7 @@
 #define lr_parser_h
 
 #include <assert.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <iostream>
 #include "lr_symbol.h"
 #include "scanner.h"

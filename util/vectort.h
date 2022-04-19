@@ -2,7 +2,7 @@
 #define UTIL_VECTORT_H
 
 #include <string.h>
-#include <malloc.h>
+#include <stdlib.h>
 
 #ifndef   UTIL_TYPES_H
 #include "util/types.h"

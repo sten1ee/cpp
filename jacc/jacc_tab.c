@@ -25,7 +25,7 @@
 
 #line 1 "jacc.y"
 
-#include <malloc.h>    // decl of alloca()
+#include <stdlib.h>    // decl of alloca()
 #include "jacc_glue.h" // decl of jg_xxx() functions used in the action code
 
 typedef const char  const_char; // otherwise BC++ messes up

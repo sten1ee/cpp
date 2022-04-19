@@ -1,7 +1,7 @@
 #ifndef UTIL_EALLOCA_H
 #define UTIL_EALLOCA_H
 
-#include <malloc.h>
+#include <stdlib.h>
 
 #ifndef ECOUNT
 const ECOUNT = 64;
