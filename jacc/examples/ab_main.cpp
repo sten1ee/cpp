@@ -2,9 +2,9 @@
 #include "ab_sym.h"
 
 
-char *pc;
+const char *pc;
 
-class CharScanner : public Scanner
+class CharScanner : public scanner
 {
   public: lr_symbol* next_token();
 };
@@ -25,14 +25,15 @@ lr_symbol* CharScanner::next_token()
   return tok;
 }
 
-void main(int , char* argv[])
+int main(int , char* argv[])
 {
   pc = argv[1];
   if (!pc)
-    pc == "";
+    pc = "";
 
   CharScanner cs;
   ab_parser  parser;
-  parser.setScanner(&cs);
+  parser.set_scanner(&cs);
   parser.parse();
+  return 0;
 }

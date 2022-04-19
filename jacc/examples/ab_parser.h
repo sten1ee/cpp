@@ -7,11 +7,13 @@
 
 class ab_parser : public lr_parser, public lr_parser::action_executor
 {
+    typedef lr_parser::prod_entry  prod_entry;
+    typedef unsigned short         del_entry;
+
   public:
     virtual short**     action_table();
     virtual short**     reduce_table();
-    virtual short     (*production_table())[][2];
-    unsigned short* delete_table();
+    virtual prod_entry* production_table();
     virtual int         start_state()      { return 0; }
     virtual int         start_production() { return 0; }
     virtual int         EOF_sym()          { return 2; }
@@ -20,17 +22,23 @@ class ab_parser : public lr_parser, public lr_parser::action_executor
                                   lr_parser&  _parser,
                                   lr_symbol** _stack_top);
 
+            del_entry*  delete_table();
             void        delete_pending_symbols();
+
+    void init()
+      {
+        set_action_executor(this);
+      }
 
     ab_parser()
       {
-        set_action_executor(this);
+        init();
       }
 
     ab_parser(scanner* s)
       : lr_parser(s)
       {
-        set_action_executor(this);
+        init();
       }
 
    ~ab_parser()

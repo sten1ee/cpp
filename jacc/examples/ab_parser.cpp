@@ -4,37 +4,36 @@
 short** ab_parser::action_table()
 {
 
-  static short
-  s0[] =
+  static short s0[] =
   {  6,
      2,  -4,  3,   2,
     -1,   0
-  },
-  s1[] =
+  };
+  static short s1[] =
   {  6,
      3,   2,  4,  -4,
     -1,   0
-  },
-  s2[] =
+  };
+  static short s2[] =
   {  4,
      2,  -2,
     -1,   0
-  },
-  s3[] =
+  };
+  static short s3[] =
   {  4,
      2,  -1,
     -1,   0
-  },
-  s4[] =
+  };
+  static short s4[] =
   {  4,
      4,   6,
     -1,   0
-  },
-  s5[] =
+  };
+  static short s5[] =
   {  2,
     -1,  -3
-  },
- *action_tab[] =
+  };
+  static short *action_tab[] =
   {
     s0  +1, s1  +1, s2  +1, s3  +1, s4  +1, s5  +1
   };
@@ -44,38 +43,37 @@ short** ab_parser::action_table()
 short** ab_parser::reduce_table()
 {
 
-  static short
-  s0[] =
+  static short s0[] =
   {   6,
       5,  2,  6,  3,
      -1, -1
-  },
-  s1[] =
+  };
+  static short s1[] =
   {   4,
       5,  4,
      -1, -1
-  },
- *reduce_tab[] =
+  };
+  static short *reduce_tab[] =
   {
     s0  +1, s1  +1,      0,      0,      0,      0
   };
   return reduce_tab;
 }
 
-short (*ab_parser::production_table())[][2]
+ab_parser::prod_entry* ab_parser::production_table()
 {
 
-  static short production_tab[][2] =
+  static prod_entry  production_tab[] =
   {
     {  0, 2},{  6, 1},{  5, 3},{  5, 0}
   };
-  return &production_tab;
+  return production_tab;
 }
 
-unsigned short*  ab_parser::delete_table()
+ab_parser::del_entry* ab_parser::delete_table()
 {
 
-  static unsigned short delete_tab[] = 
+  static del_entry  delete_tab[] =
   {
       0,   1,   7,   0, 
   };
@@ -144,6 +142,7 @@ ab_parser::do_action(int _act, lr_parser& _parser, lr_symbol** _stack_top)
   default:
     _parser.report_fatal_error("ab_parser::do_action: Unmatched action number.");
   }
+
   int  top=0;
   for (unsigned del_word = delete_table()[_act]; del_word != 0; del_word >>= 1) {
     --top;
