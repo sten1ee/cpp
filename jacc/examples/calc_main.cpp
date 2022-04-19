@@ -71,14 +71,16 @@ RESCAN:
 }
 
 
-void main()
+int main()
 {
   calc_scanner  scanner(cin);
   calc_parser   parser(&scanner);
   try {
   	parser.parse();
+  	return 0;
   }
   catch (lr_parser::xfatal& exn) {
   	cerr << "Bye bye ..." << endl;
+  	return 1;
   }
 }
