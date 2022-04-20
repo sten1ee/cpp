@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.21)
 project(examples)
 
 set(CMAKE_CXX_STANDARD 11)
@@ -22,11 +22,11 @@ set(JACC_TEMPLAE ${JACC_DIR}/jacc.tmpl)
 include_directories(../runtime)
 
 add_custom_command(
-  OUTPUT ${EXAMPLES_DIR}/calc_parser.cpp ${EXAMPLES_DIR}/calc_parser.h ${EXAMPLES_DIR}/calc_sym.h
-  DEPENDS jacc calc.j
-  COMMAND jacc -t ${JACC_TEMPLAE} calc.j
-  WORKING_DIRECTORY ${JACC_DIR}/examples
-  )
+    COMMAND jacc -t ${JACC_TEMPLAE} calc.j
+    WORKING_DIRECTORY ..
+    OUTPUT  ../calc_parser.cpp  ../calc_parser.h  ../calc_sym.h
+    MAIN_DEPENDENCY calc.j
+    DEPENDS jacc)
 
 set(CALC_SOURCE_FILES  calc_main.cpp calc_parser.cpp ../runtime/lr_parser.cpp)
 add_executable(calc ${CALC_SOURCE_FILES})
