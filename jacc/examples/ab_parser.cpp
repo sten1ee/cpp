@@ -112,7 +112,7 @@ ab_parser::do_action(int _act, lr_parser& _parser, lr_symbol** _stack_top)
     int& s = static_cast<value_ab_sym< int >*>(s_sym)->value;
     ab_sym* result_sym = new ab_sym;
 
-    printf("Result is: %d", s);
+    printf("Result is: %d\n", s);
 
     RESULT = result_sym;
     break;

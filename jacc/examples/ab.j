@@ -3,7 +3,7 @@
 %type int_sym<int> S;
 
 AB
-    : S(s)      {printf("Result is: %d", s)}
+    : S(s)      {printf("Result is: %d\n", s)}
     ;
 S
     : a S(s) b  {result = s + 1}
