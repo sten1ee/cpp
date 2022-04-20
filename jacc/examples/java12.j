@@ -36,7 +36,7 @@ scan with {: return lexer.nextToken(); :};
 %%PARSER_CODE {
 #include <stdio.h>
 
-extern int yylex();
+extern intptr_t yylex();
 extern int src_lineno;
 
 extern "C" int yywrap() { return 1; }

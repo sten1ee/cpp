@@ -10,6 +10,8 @@
 #define YY_FLEX_MINOR_VERSION 5
 
 #include <stdio.h>
+#include <stdint.h>
+#define register
 
 
 /* cfront 1.2 defines "c_plusplus" instead of "__cplusplus" */
@@ -278,7 +280,7 @@ static void yy_fatal_error YY_PROTO(( yyconst char msg[] ));
  */
 #define YY_DO_BEFORE_ACTION \
 	yytext_ptr = yy_bp; \
-	yyleng = (int) (yy_cp - yy_bp); \
+	yyleng = (intptr_t) (yy_cp - yy_bp); \
 	yy_hold_char = *yy_cp; \
 	*yy_cp = '\0'; \
 	yy_c_buf_p = yy_cp;
@@ -582,7 +584,7 @@ char *yytext;
 
 int src_lineno = 1;
 
-#define TT(LT) /*printf("%s\t`%s'\n", #LT, yytext);*/ return (int)new LT##_sym;
+#define TT(LT) /*printf("%s\t`%s'\n", #LT, yytext);*/ return (intptr_t)new LT##_sym;
 #define ERR(MSG) printf("line %d: %s\n", src_lineno, MSG);
 #line 588 "java12_lex.cpp"
 
@@ -711,7 +713,7 @@ YY_MALLOC_DECL
  * easily add parameters.
  */
 #ifndef YY_DECL
-#define YY_DECL int yylex YY_PROTO(( void ))
+#define YY_DECL intptr_t yylex YY_PROTO(( void ))
 #endif
 
 /* Code executed at the beginning of each rule, after yytext and yyleng
@@ -1422,7 +1424,7 @@ ECHO;
 	case YY_END_OF_BUFFER:
 		{
 		/* Amount of text matched not including the EOB char. */
-		int yy_amount_of_matched_text = (int) (yy_cp - yytext_ptr) - 1;
+		int yy_amount_of_matched_text = (intptr_t) (yy_cp - yytext_ptr) - 1;
 
 		/* Undo the effects of YY_DO_BEFORE_ACTION. */
 		*yy_cp = yy_hold_char;
@@ -1590,7 +1592,7 @@ static int yy_get_next_buffer()
 	/* Try to read more data. */
 
 	/* First move last chars to start of buffer. */
-	number_to_move = (int) (yy_c_buf_p - yytext_ptr) - 1;
+	number_to_move = (intptr_t) (yy_c_buf_p - yytext_ptr) - 1;
 
 	for ( i = 0; i < number_to_move; ++i )
 		*(dest++) = *(source++);
@@ -1617,7 +1619,7 @@ static int yy_get_next_buffer()
 			YY_BUFFER_STATE b = yy_current_buffer;
 
 			int yy_c_buf_p_offset =
-				(int) (yy_c_buf_p - b->yy_ch_buf);
+				(intptr_t) (yy_c_buf_p - b->yy_ch_buf);
 
 			if ( b->yy_is_our_buffer )
 				{
@@ -1778,8 +1780,8 @@ register char *yy_bp;
 		while ( source > yy_current_buffer->yy_ch_buf )
 			*--dest = *--source;
 
-		yy_cp += (int) (dest - source);
-		yy_bp += (int) (dest - source);
+		yy_cp += (intptr_t) (dest - source);
+		yy_bp += (intptr_t) (dest - source);
 		yy_current_buffer->yy_n_chars =
 			yy_n_chars = yy_current_buffer->yy_buf_size;
 
