@@ -33,7 +33,7 @@ void lr_parser::report_fatal_error(const char* message, lr_symbol* info)
   report_error(message, info);
 
   /* throw an exception */
-  throw xfatal("Fatal Error: Can't recover from previous error(s)");
+  throw xfatal(xfatal::UNRECOVERABLE_SYNTAX_ERROR);
 }
 
 void lr_parser::report_error(const char* message, lr_symbol* info)

@@ -147,9 +147,27 @@ class lr_parser
       when fatal error is encountered */
   public struct xfatal
     {
-      const char* msg;
-      xfatal(const char* m)   : msg(m)     {;}
-      xfatal(const xfatal& x) : msg(x.msg) {;}
+      enum reason_t {
+        PARSER_STACK_EXHAUSTED,
+        UNRECOVERABLE_SYNTAX_ERROR
+      };
+
+      const reason_t reason;
+      const size_t   param1;
+      const size_t   param2;
+
+      xfatal(reason_t reason, size_t param1=-1, size_t param2=-1)
+        : reason(reason), param1(param1), param2(param2)
+      {;}
+
+      const char* msg() const {
+        switch (reason) {
+          case PARSER_STACK_EXHAUSTED:
+            return "Parser fatal error: Parser stack exhausted";
+          case UNRECOVERABLE_SYNTAX_ERROR:
+            return "Parser fatal error: Can't recover from previous error(s)";
+        }
+      }
     };
 
   public struct stack_allocator
@@ -158,7 +176,7 @@ class lr_parser
       {
         void* res = ::malloc(sz);
         if (res == 0) {
-          throw xfatal("Fatal Error: Can't allocate parser stack");
+          throw xfatal(xfatal::PARSER_STACK_EXHAUSTED, sz);
         }
         return res;
       }
@@ -167,7 +185,7 @@ class lr_parser
       {
         void* res = ::realloc(p, sz);
         if (res == 0) {
-          throw lr_parser::xfatal("Fatal Error: Parser stack exhausted");
+          throw xfatal(xfatal::PARSER_STACK_EXHAUSTED, sz);
         }
         return res;
       }
